@@ -4,4 +4,8 @@
     <string name="itenary_tab">Itenary</string>
     <string name="main_tab">Main</string>
     <string name="locator_tab">Locator</string>
+    <string name="settings">Settings</string>
+    <string name="title_settings">Settings</string>
+    <string name="key_username">username</string>
+    <string name="key_theme">theme</string>
 </resources>
