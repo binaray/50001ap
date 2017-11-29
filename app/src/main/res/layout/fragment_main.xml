@@ -1,13 +1,63 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.five_o_one.ap1d.MainFragment">
+    tools:context="com.five_o_one.ap1d.MainFragment"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:alpha="0.8"
+        android:padding="10dp"
+        android:background="@drawable/layout_feature_bg"
+        android:animateLayoutChanges="true">
+        <TextView
+            android:id="@+id/featured_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:textColor="@color/textColorPrimary"
+            android:text="Featured Location:" />
+        <ImageView
+            android:id="@+id/featured_img"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_margin="10dp"
+            android:scaleType="centerCrop"
+            android:layout_below="@id/featured_title"
+            android:src="@drawable/img0" />
+        <TextView
+            android:id="@+id/featured_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/featured_title"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_toEndOf="@+id/featured_img"
+            android:text="Error. Unknown. No known details recorded. Error.errorerror" />
+    </RelativeLayout>
+
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimaryInverse"
+        android:text="Available Locations: "
+        android:paddingLeft="14dp"
+        android:paddingRight="10dp"
+        android:background="@drawable/textview_selector_bg"
+        android:alpha="0.8"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_v"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Main" />
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:background="@drawable/layout_selections_bg"
+        android:alpha="0.8"/>
 
-</FrameLayout>
+</LinearLayout>

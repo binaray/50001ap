@@ -4,7 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/textColorPrimaryInverse"
     tools:context="com.five_o_one.ap1d.MainActivity">
+
+    <ImageView
+        android:id="@+id/main_bg"
+        android:src="@drawable/img0"
+        android:scaleType="centerCrop"
+        android:alpha="0.3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
@@ -15,9 +24,9 @@
             android:id="@+id/tablayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top" />
+            android:layout_gravity="top"
+            android:background="@color/textColorPrimaryInverse"/>
 
     </android.support.v4.view.ViewPager>
 
-    <!--//ImageView or whatever here for background-->
 </android.support.constraint.ConstraintLayout>

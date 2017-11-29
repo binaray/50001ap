@@ -9,4 +9,27 @@
         <item>0</item>
         <item>1</item>
     </string-array>
+
+    <!--Default database resources-->
+    <string-array name="locationNames">
+
+    </string-array>
+
+    <string-array name="locationDetails">
+        <item>Built across the mouth of Marina Channel, Marina Barrage (MB) creates Singapore’s 15th reservoir, and the first in the heart of the city.</item>
+
+    </string-array>
+
+    <array name="locationImages">
+        <item>@drawable/img0</item>
+        <item>@drawable/img1</item>
+        <item>@drawable/img2</item>
+        <item>@drawable/img3</item>
+        <item>@drawable/img4</item>
+        <item>@drawable/img0</item>
+        <item>@drawable/img0</item>
+        <item>@drawable/img0</item>
+        <item>@drawable/img0</item>
+        <item>@drawable/img0</item>
+    </array>
 </resources>
