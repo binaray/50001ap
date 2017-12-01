@@ -31,7 +31,7 @@
             android:layout_margin="10dp"
             android:scaleType="centerCrop"
             android:layout_below="@id/featured_title"
-            android:src="@drawable/img0" />
+            android:src="@drawable/img6" />
         <TextView
             android:id="@+id/featured_details"
             android:layout_width="wrap_content"

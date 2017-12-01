@@ -12,6 +12,8 @@ public class LocationData implements Parcelable {
     private String name="name";
     private String details="placeholder";
     private int imageUrl=0;
+    private int selected=0;
+    private Path[] paths;
 
     public LocationData(){}
 
@@ -21,10 +23,18 @@ public class LocationData implements Parcelable {
         this.imageUrl=imageUrl;
     }
 
+    public LocationData(String name, String details, int imageUrl,Path[] paths){
+        this.name=name;
+        this.details=details;
+        this.imageUrl=imageUrl;
+        this.paths=paths;
+    }
+
     public LocationData(Parcel in) {
         name=in.readString();
         details=in.readString();
         imageUrl=in.readInt();
+        selected=in.readInt();
     }
 
     public String getName() {
@@ -51,6 +61,22 @@ public class LocationData implements Parcelable {
         this.imageUrl = imageUrl;
     }
 
+    public int isSelected() {
+        return selected;    //1-true 0-false
+    }
+
+    public void setSelected(int selected) {
+        this.selected = selected;
+    }
+
+    public void setPaths(Path[] paths) {
+        this.paths = paths;
+    }
+
+    public Path[] getPaths() {
+        return paths;
+    }
+
     public static final Creator<LocationData> CREATOR = new Creator<LocationData>() {
         @Override
         public LocationData createFromParcel(Parcel in) {
@@ -73,6 +99,7 @@ public class LocationData implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(details);
         parcel.writeInt(imageUrl);
+        parcel.writeInt(selected);
     }
 
     @Override

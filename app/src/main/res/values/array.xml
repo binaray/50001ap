@@ -26,10 +26,10 @@
         <item>@drawable/img2</item>
         <item>@drawable/img3</item>
         <item>@drawable/img4</item>
-        <item>@drawable/img0</item>
-        <item>@drawable/img0</item>
-        <item>@drawable/img0</item>
-        <item>@drawable/img0</item>
-        <item>@drawable/img0</item>
+        <item>@drawable/img5</item>
+        <item>@drawable/img6</item>
+        <item>@drawable/img7</item>
+        <item>@drawable/img8</item>
+        <item>@drawable/img9</item>
     </array>
 </resources>

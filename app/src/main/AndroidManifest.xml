@@ -21,12 +21,18 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_settings"
-            android:parentActivityName="com.five_o_one.ap1d.MainActivity" >
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.five_o_one.ap1d.MainActivity" />
         </activity>
-
+        <activity android:name=".ItinenaryActivity"
+            android:label="@string/title_itinerary"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.five_o_one.ap1d.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

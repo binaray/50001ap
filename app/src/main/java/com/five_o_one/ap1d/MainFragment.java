@@ -20,14 +20,14 @@ import java.util.Random;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * { MainFragment.OnFragmentInteractionListener} interface
+ * { MainFragment.OnMainFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     private static final String ARG_DATALIST = "datalist";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_RANDOMNO="randomNum";
 
     private List<LocationData> dataList;
     private String mParam2;
@@ -36,16 +36,18 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     private TextView featuredName;
     private TextView featuredDetails;
     LocationData featured;
-    private OnFragmentInteractionListener mListener;
+    private static int f_pos;
+    private OnMainFragmentInteractionListener mListener;
 
     public MainFragment() {
         // Required empty public constructor
     }
 
-    public static MainFragment newInstance(List<LocationData> dataList) {
+    public static MainFragment newInstance(List<LocationData> dataList,int rand) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_DATALIST, (ArrayList) dataList);
+        args.putInt(ARG_RANDOMNO,rand);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,6 +57,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             dataList = (ArrayList) getArguments().getParcelableArrayList(ARG_DATALIST);
+            f_pos=getArguments().getInt(ARG_RANDOMNO);
         }
     }
 
@@ -68,14 +71,12 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
         featuredName=view.findViewById(R.id.featured_title);
         featuredDetails=view.findViewById(R.id.featured_details);
 
-        int position=new Random().nextInt(10);
-        featured = dataList.get(position);
+        featured = dataList.get(f_pos);
         String title="Featured Location: ";
         title=title.concat(featured.getName());
         featuredName.setText(title);
         featuredImg.setImageResource(featured.getImageUrl());
         featuredDetails.setText(featured.getDetails());
-        onItemSelected(featured.getImageUrl());
         RecyclerView rv= (RecyclerView) view.findViewById(R.id.recycler_v);
         MyAdapter adapter=new MyAdapter(dataList);
         rv.setAdapter(adapter);
@@ -85,9 +86,9 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     }
 
     // For interfacing to main activity if needed
-    public void onItemSelected(int imgId) {
+    public void onItemSelected(int position) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(imgId);
+            mListener.onMainFragmentInteraction(position);
         }
     }
 
@@ -95,11 +96,11 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     public void onAttach(Context context) {
         super.onAttach(context);
         linearLayoutManager=new LinearLayoutManager(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnMainFragmentInteractionListener) {
+            mListener = (OnMainFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnMainFragmentInteractionListener");
         }
     }
 
@@ -111,7 +112,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
         featuredName.setText(title);
         featuredImg.setImageResource(featured.getImageUrl());
         featuredDetails.setText(featured.getDetails());
-        onItemSelected(featured.getImageUrl());
+        onItemSelected(position);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(int imgId);
+    public interface OnMainFragmentInteractionListener {
+        void onMainFragmentInteraction(int position);
     }
 }

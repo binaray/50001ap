@@ -1,11 +1,29 @@
 <resources>
     <string name="app_name">AP1D Travel Planner</string>
 
-    <string name="itenary_tab">Itenary</string>
-    <string name="main_tab">Main</string>
-    <string name="locator_tab">Locator</string>
-    <string name="settings">Settings</string>
-    <string name="title_settings">Settings</string>
+    <!--Preference keys-->
     <string name="key_username">username</string>
     <string name="key_theme">theme</string>
+
+    <!--Activity strings-->
+    <string name="main_tab">Main</string>
+    <string name="locator_tab">Location</string>
+    <string name="settings">Settings</string>
+    <string name="title_settings">Settings</string>
+    <string name="drawer_open">Navigation drawer open</string>
+    <string name="drawer_close">Navigation drawer close</string>
+    <string name="drawer_title">Itinenary Selection</string>
+    <string name="message_empty_layout_changes">Add locations from main to begin!</string>
+
+    <string name="MarinaBaySands">marina bay sands</string>
+    <string name="SingaporeFlyer">singapore flyer</string>
+    <string name="ResortWorldSentosa">resort world sentosa</string>
+    <string name="VivoCity">vivo city</string>
+    <string name="BuddhaToothRelicTemple">buddha tooth relic temple</string>
+    <string name="Zoo">singapore zoo</string>
+    <string name="MarinaBarrage">marina barrage</string>
+    <string name="Esplanade">esplanade</string>
+    <string name="TreeTopWalk">tree top walk at macritchie reservoir</string>
+    <string name="MaxwellFoodCentre">maxwell road hawker centre</string>
+    <string name="title_itinerary">Itinerary</string>
 </resources>
