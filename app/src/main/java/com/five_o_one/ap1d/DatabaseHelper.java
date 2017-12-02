@@ -28,6 +28,8 @@ import java.util.List;
  * Created by Choco〜bourbon on 24-Nov-17.
  *
  * Note when adding new resources to project reset database as image resource ids may change
+ * Reset will be required for this case
+ *
  */
 
 public class DatabaseHelper extends SQLiteOpenHelper{
@@ -38,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private final Context context;
     private static SQLiteDatabase db;
     private static DatabaseHelper sInstance;
+//    private DatabaseListener listener;
 
     //<---Start of DB fields-->
     private static final String TABLE_NAME = "map";
@@ -47,7 +50,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public final static String COLUMN_Paths = "Paths";
     public final static String COLUMN_ImageUrl = "ImageUrl";
     public final static String COLUMN_Selected = "Selected";
-    public final static String[] ALL_COLUMNS = new String[]{COLUMN_Name, COLUMN_Details,COLUMN_ImageUrl};
 
     //Use getInstance to initialize instead of this
     private DatabaseHelper(Context context) {
@@ -92,11 +94,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         // Create and/or open the database for writing
         if (db==null) db = getWritableDatabase();
         db.beginTransaction();
-//        final ProgressDialog pd = new ProgressDialog(con);
-//        pd.setTitle("Please Wait");
-//        pd.setMessage("Adding Location(s)");
-//        pd.show();
-
         Boolean status=true;
         try {
             final GsonBuilder builder=new GsonBuilder();
@@ -121,15 +118,62 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             status=false;
         } finally {
             db.endTransaction();
-//            pd.dismiss();
         }
     }
 
+    public void updateSelected(LocationData data)
+    {
+        if (db==null) db = getWritableDatabase();
+        db.beginTransaction();
+        try{
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_Selected, Integer.toString(data.isSelected()));
+//            values.put(COLUMN_Details,"boboboobobo");
+//            db.update(TABLE_NAME, values, COLUMN_ID + "=" + Integer.toString(data.getId()), null);
+//            db.update(TABLE_NAME, values, COLUMN_Name + " = ?", new String[] { data.getName() });
+            String[] whereArgs = {String.valueOf(data.getId())};
+            int success=db.update(TABLE_NAME, values, COLUMN_ID +"=?", whereArgs );
+            Log.v("Selections updated", String.valueOf(success)+"with val of"+data.isSelected());
+            db.setTransactionSuccessful();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        db.endTransaction();
+    }
 
     List<LocationData> getDataList(){
         db = getReadableDatabase();
         List<LocationData> datalist=new ArrayList();
         Cursor c= db.query(TABLE_NAME, null, null, null, null, null, null);
+        if (c != null) {
+//            final GsonBuilder builder=new GsonBuilder();
+//            builder.serializeSpecialFloatingPointValues();
+            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+//                Gson gson=builder.create();
+                LocationData data=new LocationData();
+//                Path[] paths=gson.fromJson(c.getString(c.getColumnIndex(COLUMN_Paths)),Path[].class);
+                data.setId(c.getInt(c.getColumnIndex(COLUMN_ID)));
+                data.setName(c.getString(c.getColumnIndex(COLUMN_Name)));
+                data.setDetails(c.getString(c.getColumnIndex(COLUMN_Details)));
+//                data.setPaths(paths);     //not used in MainActivity
+                data.setImageUrl(c.getInt(c.getColumnIndex(COLUMN_ImageUrl)));
+                data.setSelected(c.getInt(c.getColumnIndex(COLUMN_Selected)));
+                Log.v("Location data:",data.toString());
+                datalist.add(data);
+            }
+            c.close();
+        }
+        return datalist;
+    }
+
+    List<LocationData> getSelectedDataList(){
+        db = getReadableDatabase();
+        List<LocationData> datalist=new ArrayList();
+        final String WHERE = "CAST("+COLUMN_Selected+" as TEXT) = ?";
+        final String[] WHEREARGS = new String[] { "1" };
+        Cursor c= db.query(TABLE_NAME, null, WHERE, WHEREARGS, null, null, null);
         if (c != null) {
             final GsonBuilder builder=new GsonBuilder();
             builder.serializeSpecialFloatingPointValues();
@@ -143,18 +187,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 data.setPaths(paths);
                 data.setImageUrl(c.getInt(c.getColumnIndex(COLUMN_ImageUrl)));
                 data.setSelected(c.getInt(c.getColumnIndex(COLUMN_Selected)));
-                Log.v("data:",data.toString());
-//                Bundle temp2 = new Bundle();
-//                for (String COL:ALL_COLUMNS_USER_ENTER) {
-//                    temp2.putString(COL,c.getString(c.getColumnIndex(COL)));
-//                }
+                Log.v("Selected data:",data.toString());
                 datalist.add(data);
             }
             c.close();
         }
         return datalist;
     }
-
 
 
 /*-----------------------------------------
@@ -304,7 +343,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         TypedArray ar = context.getResources().obtainTypedArray(R.array.locationImages);
         List<LocationData> dataList=new ArrayList<LocationData>();
         for (int i = 0; i < ar.length(); i++) {
-            dataList.add(new LocationData(locationNames[i],locationDetails[i],ar.getResourceId(i,0),adjmat[i]));
+            dataList.add(new LocationData(locationNames[i],locationDetails[i],ar.getResourceId(i,0),adjmat[i],0));
         }
         ar.recycle();
         sInstance.addLocations(dataList,db);

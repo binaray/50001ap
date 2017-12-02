@@ -8,12 +8,12 @@ import android.os.Parcelable;
  */
 
 public class LocationData implements Parcelable {
-
+    private int id=0;
     private String name="name";
     private String details="placeholder";
     private int imageUrl=0;
-    private int selected=0;
-    private Path[] paths;
+    private int selected;
+    private Path[] paths=new Path[10];
 
     public LocationData(){}
 
@@ -23,18 +23,28 @@ public class LocationData implements Parcelable {
         this.imageUrl=imageUrl;
     }
 
-    public LocationData(String name, String details, int imageUrl,Path[] paths){
+    public LocationData(String name, String details, int imageUrl,Path[] paths, int selected){
         this.name=name;
         this.details=details;
         this.imageUrl=imageUrl;
         this.paths=paths;
+        this.selected=selected;
     }
 
     public LocationData(Parcel in) {
+        id=in.readInt();
         name=in.readString();
         details=in.readString();
         imageUrl=in.readInt();
         selected=in.readInt();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -96,6 +106,7 @@ public class LocationData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
         parcel.writeString(name);
         parcel.writeString(details);
         parcel.writeInt(imageUrl);
@@ -105,9 +116,11 @@ public class LocationData implements Parcelable {
     @Override
     public String toString() {
         return "Location{" +
-                "name='" + name + '\'' +
+                "id='" + id + '\'' +
+                ",name='" + name + '\'' +
                 ", details='" + details + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
+                ", isSelected='" + selected + '\'' +
                 '}';
     }
 }

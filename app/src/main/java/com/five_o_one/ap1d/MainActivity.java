@@ -1,8 +1,11 @@
 package com.five_o_one.ap1d;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,16 +15,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -32,21 +41,25 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private DrawerLayout drawerLayout;
-    private LinearLayout container;
+    private ListView container;
     private ActionBarDrawerToggle drawerToggle;
     private ImageView bg_img;
     private int rand;
+    private Button itinenaryButton;
+    private List<Integer> selectedPositions=new ArrayList<Integer>();
+    private SelectedListAdapter selectedListAdapter;
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_layout);
 
-
         tabLayout=(TabLayout) findViewById(R.id.tablayout);
         viewPager=(ViewPager) findViewById(R.id.viewpager);
         drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
-        container=(LinearLayout) findViewById(R.id.drawer_list);
+        container=(ListView) findViewById(R.id.drawer_list);
+        itinenaryButton=(Button)findViewById(R.id.process_itinerary);
         bg_img=(ImageView)findViewById(R.id.main_bg);
         rand=new Random().nextInt(10);
 
@@ -61,8 +74,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
             }
             @Override
             protected Exception doInBackground(String... strings) {
-                databaseHelper = DatabaseHelper.getInstance(MainActivity.this);
-                dataList = databaseHelper.getDataList();
+                try {
+                    databaseHelper = DatabaseHelper.getInstance(MainActivity.this);
+                    dataList = databaseHelper.getDataList();
+                }
+                catch (Exception e){
+                    return e;
+                }
                 return null;
             }
             @Override
@@ -73,15 +91,30 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
         }.execute();
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onStart() {
         super.onStart();
-    }
-
-    @Override
-    public void onMainFragmentInteraction(int position) {
-        bg_img.setImageResource(dataList.get(position).getImageUrl());
-        addItem(position);
+        new AsyncTask<String, Integer, Exception>() {
+            @Override
+            protected void onPreExecute(){
+                drawerLayout.openDrawer(Gravity.LEFT);
+            }
+            @Override
+            protected Exception doInBackground(String... strings) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return e;
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Exception e){
+                drawerLayout.closeDrawer(Gravity.LEFT);
+            }
+        }.execute();
     }
 
     public void setupUi(){
@@ -102,25 +135,51 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
             }
         };
         drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerToggle.syncState();
         // Set the drawer toggle as the DrawerListener
         drawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         viewPager.setAdapter(new SectionPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
+
+        itinenaryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,ItinenaryActivity.class));
+            }
+        });
+
+        //store selected locations indices to a list
+        for (int i=0;i<dataList.size();i++) if (dataList.get(i).isSelected()==1) selectedPositions.add(i);
+        selectedListAdapter=new SelectedListAdapter();
+        container.setAdapter(selectedListAdapter);
+    }
+
+    @Override
+    public void onMainFragmentInteraction(int position) {
+        bg_img.setImageResource(dataList.get(position).getImageUrl());
+    }
+
+    @Override
+    public void onLocationAdded(int position) {
+        if (selectedPositions.contains(position)) Toast.makeText(this,"Location has already been added!",Toast.LENGTH_SHORT).show();
+        else {
+            dataList.get(position).setSelected(1);
+            databaseHelper.updateSelected(dataList.get(position));
+            selectedPositions.add(position);
+            selectedListAdapter.notifyDataSetChanged();
+        }
     }
 
     public class SectionPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
         private String tabTitles[] = new String[]{getString(R.string.main_tab), getString(R.string.locator_tab)};
-
         public SectionPagerAdapter(FragmentManager fm) {
             super(fm);
         }
-
         @Override
         public Fragment getItem(int position) {
             switch (position) {
@@ -131,48 +190,15 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
                     return LocatorFragment.newInstance("a","b");
             }
         }
-
         @Override
         public int getCount() {
             return PAGE_COUNT;
         }
-
         @Override
         public CharSequence getPageTitle(int position) {
             return tabTitles[position];
         }
     }
-
-
-    private void addItem(int position) {
-        // Hides textview
-        findViewById(android.R.id.empty).setVisibility(View.GONE);
-        // Instantiate a new "row" view.
-        final ViewGroup newView = (ViewGroup) LayoutInflater.from(this).inflate(
-                R.layout.nav_drawer_item, container, false);
-
-        // Set the text in the new row to a location
-        ((TextView) newView.findViewById(android.R.id.text1)).setText(dataList.get(position).getName());
-
-        // Set a click listener for the "X" button in the row that will remove the row.
-        newView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Remove the row from its parent (the container view).
-                // Because mContainerView has android:animateLayoutChanges set to true,
-                // this removal is automatically animated.
-                container.removeView(newView);
-                // If there are no rows remaining, show the empty view.
-                if (container.getChildCount() == 0) {
-                    findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        // Because mContainerView has android:animateLayoutChanges set to true,
-        // adding this view is automatically animated.
-        container.addView(newView, 0);
-    }
-
 
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
@@ -198,5 +224,40 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     public void onSettingsAction(MenuItem item) {
         Intent settingsIntent=new Intent(this,SettingsActivity.class);
         startActivity(settingsIntent);
+    }
+
+    private class SelectedListAdapter extends ArrayAdapter<Integer>{
+
+        public SelectedListAdapter() {
+            super(MainActivity.this,R.layout.nav_drawer_item ,selectedPositions);
+        }
+
+        @Override
+        public View getView(final int position, View convertView, final ViewGroup parent) {
+            final int index=selectedPositions.get(position);
+
+            findViewById(android.R.id.empty).setVisibility(View.GONE);
+            itinenaryButton.setVisibility(View.VISIBLE);
+
+            LayoutInflater inflater = (LayoutInflater) MainActivity.this
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View rowView = inflater.inflate(R.layout.nav_drawer_item, parent, false);
+
+            ((TextView) rowView.findViewById(android.R.id.text1)).setText(dataList.get(index).getName());
+            rowView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dataList.get(index).setSelected(0);
+                    databaseHelper.updateSelected(dataList.get(index));
+                    if (parent.getChildCount() == 0) {
+                        findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
+                        itinenaryButton.setVisibility(View.GONE);
+                    }
+                    selectedPositions.remove(position);
+                    notifyDataSetChanged();
+                }
+            });
+            return rowView;
+        }
     }
 }

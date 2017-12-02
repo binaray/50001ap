@@ -1,5 +1,6 @@
 package com.five_o_one.ap1d;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -23,11 +28,13 @@ import java.util.Set;
 
 public class ItinenaryActivity extends AppCompatActivity {
     Set<Integer> Selected  = new HashSet<>();
-    Path [][] adjmat = new Path[10][10];
+    //Path [][] adjmat = new Path[10][10];
     Map<Integer,String> locationNames = new HashMap<>();
     Map<Integer,String> transportNames = new HashMap<>();
     TextView estimate_print;
     EditText budgetfill;
+    DatabaseHelper databaseHelper;
+    List<LocationData> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,127 +44,11 @@ public class ItinenaryActivity extends AppCompatActivity {
         estimate_print = (TextView) findViewById(R.id.estimateprint);
         budgetfill = (EditText) findViewById(R.id.budget);
 
-        Path infPath = new Path(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-        locationNames.put(0,"Marina Bay Sands");
-        adjmat[0][0] = infPath.adddirection(0,0);
-        adjmat[0][1] = new Path(14,0,17,1.83,3,3.22,0,1);
-        adjmat[0][2] = new Path(69,0,26,1.18,14,6.96,0,2);
-        adjmat[0][3] = new Path(76,0,35,4.03,19,8.50,0,3);
-        adjmat[0][4] = new Path(28,0,19,0.88,8,4.98,0,4);
-        adjmat[0][5] = new Path(269,0,84,1.96,30,18.40,0,5);
-        adjmat[0][6] = new Path(19,0,44,0.87,6,4.76,0,6);
-        adjmat[0][7] = new Path(14,0,25,0.77,4,4.43,0,7);
-        adjmat[0][8] = new Path(155,0,68,1.37,21,11.30,0,8);
-        adjmat[0][9] = new Path(32,0,18,0.77,6,4.90,0,9);
+        databaseHelper=DatabaseHelper.getInstance(this);
+        List<LocationData> testList=databaseHelper.getDataList();
 
-        locationNames.put(1,"Singapore Flyer");
-        adjmat[1][0] = new Path(14,0,17,0.83,6,4.32,1,0);
-        adjmat[1][1] = infPath.adddirection(1,1);
-        adjmat[1][2] = new Path(81,0,31,1.26,13,7.84,1,2);
-        adjmat[1][3] = new Path(88,0,38,4.03,18,9.36,1,3);
-        adjmat[1][4] = new Path(39,0,24,0.98,8,4.76,1,4);
-        adjmat[1][5] = new Path(264,0,85,1.89,29,18.18,1,5);
-        adjmat[1][6] = new Path(29,0,50,0.97,8,5.47,1,6);
-        adjmat[1][7] = new Path(12,0,21,0.77,3,3.94,1,7);
-        adjmat[1][8] = new Path(151,0,70,1.33,21,10.71,1,8);
-        adjmat[1][9] = new Path(38,0,24,0.77,6,5.25,1,9);
-
-        locationNames.put(2,"Vivo City");
-        adjmat[2][0] = new Path(69,0,24,1.18,12,8.30,2,0);
-        adjmat[2][1] = new Path(81,0,29,1.26,14,7.96,2,1);
-        adjmat[2][2] = infPath.adddirection(2,2);
-        adjmat[2][3] = new Path(12,0,10,2.00,9,4.54,2,3);
-        adjmat[2][4] = new Path(47,0,18,0.98,11,6.42,2,4);
-        adjmat[2][5] = new Path(270,0,85,1.99,31,22.58,2,5);
-        adjmat[2][6] = new Path(91,0,55,1.16,13,8.19,2,6);
-        adjmat[2][7] = new Path(68,0,31,1.07,13,9.58,2,7);
-        adjmat[2][8] = new Path(176,0,72,1.49,26,15.73,2,8);
-        adjmat[2][9] = new Path(48,0,17,0.77,11,8.87,2,9);
-
-        locationNames.put(3,"Resort World Sentosa");
-        adjmat[3][0] = new Path(76,0,33,1.18,13,8.74,3,0);
-        adjmat[3][1] = new Path(88,0,38,1.26,14,8.40,3,1);
-        adjmat[3][2] = new Path(12,0,10,0.00,4,3.22,3,2);
-        adjmat[3][3] = infPath.adddirection(3,3);
-        adjmat[3][4] = new Path(55,0,27,0.98,12,6.64,3,4);
-        adjmat[3][5] = new Path(285,0,92,1.99,32,22.80,3,5);
-        adjmat[3][6] = new Path(105,0,63,1.16,19,9.26,3,6);
-        adjmat[3][7] = new Path(81,0,34,0.97,19,9.65,3,7);
-        adjmat[3][8] = new Path(189,0,78,1.49,32,16.92,3,8);
-        adjmat[3][9] = new Path(62,0,25,0.77,17,8.89,3,9);
-
-        locationNames.put(4, "Buddha Tooth Relic Temple");
-        adjmat[4][0] = new Path(28,0,18,0.88,7,5.32,4,0);
-        adjmat[4][1] = new Path(39,0,23,0.98,8,4.76,4,1);
-        adjmat[4][2] = new Path(47,0,19,0.98,9,4.98,4,2);
-        adjmat[4][3] = new Path(55,0,28,3.98,14,6.52,4,3);
-        adjmat[4][4] = infPath.adddirection(4,4);
-        adjmat[4][5] = new Path(264,0,83,1.91,30,18.40,4,5);
-        adjmat[4][6] = new Path(48,0,47,0.87,9,6.17,4,6);
-        adjmat[4][7] = new Path(23,0,24,0.77,1,6.67,4,7);
-        adjmat[4][8] = new Path(155,0,70,1.33,20,12.48,4,8);
-        adjmat[4][9] = new Path(1,0,Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY,1,3.60,4,9);
-
-        locationNames.put(5, "Zoo");
-        adjmat[5][0] = new Path(269,0,86,1.88,32,22.48,5,0);
-        adjmat[5][1] = new Path(264,0,87,1.96,29,19.40,5,1);
-        adjmat[5][2] = new Path(270,0,86,2.11,32,21.48,5,2);
-        adjmat[5][3] = new Path(285,0,96,4.99,36,23.68,5,3);
-        adjmat[5][4] = new Path(264,0,84,1.91,30,21.60,5,4);
-        adjmat[5][5] = infPath.adddirection(5,5);
-        adjmat[5][6] = new Path(298,0,106,1.90,33,24.43,5,6);
-        adjmat[5][7] = new Path(273,0,67,1.75,28,19.93,5,7);
-        adjmat[5][8] = new Path(183,0,104,1.72,21,14.66,5,8);
-        adjmat[5][9] = new Path(287,0,80,1.88,29,22.27,5,9);
-
-        locationNames.put(6,"Marina Barrage");
-        adjmat[6][0] = new Path(19,0,41,0.87,6,5.99,6,0);
-        adjmat[6][1] = new Path(27,0,48,0.77,10,7.02,6,1);
-        adjmat[6][2] = new Path(90,0,54,1.16,12,8.17,6,2);
-        adjmat[6][3] = new Path(103,0,58,4.16,26,10.58,6,3);
-        adjmat[6][4] = new Path(49,0,45,0.87,10,6.81,6,4);
-        adjmat[6][5] = new Path(300,0,104,1.90,30,23.96,6,5);
-        adjmat[6][6] = infPath.adddirection(6,6);
-        adjmat[6][7] = new Path(28,0,48,0.87,10,7.30,6,7);
-        adjmat[6][8] = new Path(169,0,99,1.49,25,16.11,6,8);
-        adjmat[6][9] = new Path(49,0,45,0.77,9,6.80,6,9);
-
-        locationNames.put(7,"Esplanade");
-        adjmat[7][0] = new Path(14,0,25,0.77,5,4.56,7,0);
-        adjmat[7][1] = new Path(12,0,21,0.77,4,4.61,7,1);
-        adjmat[7][2] = new Path(67,0,32,1.07,10,6.62,7,2);
-        adjmat[7][3] = new Path(80,0,33,3.97,21,8.34,7,3);
-        adjmat[7][4] = new Path(23,0,24,0.77,4,4.57,7,4);
-        adjmat[7][5] = new Path(275,0,76,1.85,27,18.75,7,5);
-        adjmat[7][6] = new Path(28,0,49,0.87,8,5.46,7,6);
-        adjmat[7][7] = infPath.adddirection(7,7);
-        adjmat[7][8] = new Path(145,0,70,1.33,20,11.16,7,8);
-        adjmat[7][9] = new Path(25,0,22,0.77,4,4.56,7,9);
-
-        locationNames.put(8,"Treetop Walk at Macrithie Reservoir");
-        adjmat[8][0] = new Path(153,0,64,1.37,23,12.74,8,0);
-        adjmat[8][1] = new Path(148,0,66,1.29,21,11.54,8,1);
-        adjmat[8][2] = new Path(172,0,71,1.45,27,18.58,8,2);
-        adjmat[8][3] = new Path(186,0,78,4.53,38,20.49,8,3);
-        adjmat[8][4] = new Path(151,0,68,1.33,23,16.29,8,4);
-        adjmat[8][5] = new Path(182,0,100,1.69,18,11.64,8,5);
-        adjmat[8][6] = new Path(166,0,98,1.49,28,14.43,8,6);
-        adjmat[8][7] = new Path(141,0,69,1.37,20,11.64,8,7);
-        adjmat[8][8] = infPath.adddirection(8,8);
-        adjmat[8][9] = new Path(152,0,71,1.37,22,16.28,8,9);
-
-        locationNames.put(9,"Maxwell Road Hawker Center");
-        adjmat[9][0] = new Path(33,0,17,0.77,6,5.18,9,0);
-        adjmat[9][1] = new Path(37,0,23,0.77,7,5.62,9,1);
-        adjmat[9][2] = new Path(48,0,18,0.77,9,5.96,9,2);
-        adjmat[9][3] = new Path(61,0,26,3.77,20,7.69,9,3);
-        adjmat[9][4] = new Path(1,0,Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY,4,3.60,9,4);
-        adjmat[9][5] = new Path(289,0,85,1.91,28,23.15,9,5);
-        adjmat[9][6] = new Path(49,0,47,0.77,8,6.05,9,6);
-        adjmat[9][7] = new Path(24,0,22,0.77,6,5.26,9,7);
-        adjmat[9][8] = new Path(156,0,71,1.37,21,12.68,9,98);
-        adjmat[9][9] = infPath.adddirection(9,9);
-
+        data=databaseHelper.getSelectedDataList();
+        Log.v("selected length: ",Integer.toString(data.size()));
 
         Button bruteforcebutton = (Button) findViewById(R.id.bruteforce);
         Button fastestimatebutton = (Button) findViewById(R.id.fastestimate);
@@ -169,131 +60,155 @@ public class ItinenaryActivity extends AppCompatActivity {
         bruteforcebutton.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                bruteforce();
+                new AsyncTask<String, Integer, Exception>() {
+                    @Override
+                    protected Exception doInBackground(String... strings) {
+                        try {
+                            bruteforce();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return e;
+                        }
+                        return null;
+                    }
+                    @Override
+                    protected void onPostExecute(Exception e){
+                        if(e==null) Toast.makeText(ItinenaryActivity.this,"Brute force sucess",Toast.LENGTH_SHORT);
+                        else Toast.makeText(ItinenaryActivity.this,"Brute force failed",Toast.LENGTH_SHORT);
+                    }
+                }.execute();
             }
         });
 
-        fastestimatebutton.setOnClickListener( new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                kruska();
-            }
-        });
+//        fastestimatebutton.setOnClickListener( new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                kruska();
+//            }
+//        });
     }
 
     void bruteforce(){
-        Selected.add(0);
-        Map<Integer,Integer> convert = new HashMap<Integer, Integer>();
-        Path[][] SelectedMatrix = new Path[Selected.size()][Selected.size()];
-        int icount = 0;
-        for (Integer i : Selected){
-            int jcount = 0;
-            convert.put(icount,i);
-            for (Integer j : Selected){
-                SelectedMatrix[icount][jcount] = adjmat[i][j];
-                SelectedMatrix[icount][jcount].adddirection(i,j);
-                jcount ++;
-            }
-            icount++;
+//        Selected.add(0);
+//        Map<Integer,Integer> convert = new HashMap<Integer, Integer>();
+//        Path[][] SelectedMatrix = new Path[Selected.size()][Selected.size()];
+//        int icount = 0;
+//        for (Integer i : Selected){
+//            int jcount = 0;
+//            convert.put(icount,i);
+//            for (Integer j : Selected){
+//                SelectedMatrix[icount][jcount] = adjmat[i][j];
+//                SelectedMatrix[icount][jcount].adddirection(i,j);
+//                jcount ++;
+//            }
+//            icount++;
+//        }
+
+        Log.v(Integer.toString(data.size()),Integer.toString(data.get(0).getPaths().length));
+        Path[][] selectedMatrix = new Path[data.size()][data.get(0).getPaths().length];
+
+        for (int i=0; i<data.size();i++) {
+            Path[] paths=data.get(i).getPaths();
+            System.arraycopy(paths, 0, selectedMatrix[i], 0, paths.length);
         }
+
         BruteForce x = new BruteForce();
         x.CostSet = Double.parseDouble(budgetfill.getText().toString());
-        int[] Pathcombination = new int[SelectedMatrix.length + 1];
+        int[] Pathcombination = new int[selectedMatrix.length + 1];
         Pathcombination[0] = 0;
-        Pathcombination[SelectedMatrix.length] = 0;
+        Pathcombination[selectedMatrix.length] = 0;
 
-        x.recursivefor(SelectedMatrix.length,SelectedMatrix.length-1, Pathcombination, SelectedMatrix);
+        x.recursivefor(selectedMatrix.length,selectedMatrix.length-1, Pathcombination, selectedMatrix);
         String text = "Start from: \t\t\t";
         for (int i = 0; i < x.BestPath.length; i++){
             if (i > 0) {
                 text = text + transportNames.get(x.TransportCombination[i - 1]) + "\t\t\t";
             }
-            text = text + locationNames.get(convert.get(x.BestPath[i])) + "\n" ;
+            text = text + data.get(0).getName() + "\n" ;
         }
         String totalcost = "$" + x.BestPathCost;
         String timetaken = x.BestPathTiming + "min";
         estimate_print.setText(text + "\nTotal Time: " + timetaken +"\nCost: " + totalcost);
     }
 
-    void kruska(){
-        Kruskal x = new Kruskal();
-        Selected.add(0);
-        Map<Integer,Integer> convert = new HashMap<Integer, Integer>();
-        Path[][] SelectedMatrix = new Path[Selected.size()][Selected.size()];
-        int icount = 0;
-        for (Integer i : Selected){
-            int jcount = 0;
-            convert.put(icount,i);
-            for (Integer j : Selected){
-                SelectedMatrix[icount][jcount] = adjmat[i][j];
-                SelectedMatrix[icount][jcount].adddirection(icount,jcount);
-                jcount ++;
-            }
-            icount++;
-        }
-        for (Path[] i : SelectedMatrix) {
-            for (Path j : i) {
-                x.addEdge(j);
-            }
-        }
-        List<Path> publictransporttime = x.kruskal(new TimeComparator());
-        Collections.sort(publictransporttime,new Sort());
-        double timing = 0;
-        double cost = 0;
-        for (Path i : publictransporttime){
-            timing += i.timetaken[i.transportmethod];
-            cost += i.costs[i.transportmethod];
-        }
-
-        double Budget = Double.parseDouble(budgetfill.getText().toString());
-        if (Budget > cost) {
-            double[] timereduction = new double[publictransporttime.size()];
-            double[] increasecost = new double[publictransporttime.size()];
-            for (int i = 0; i < publictransporttime.size(); i++) {
-                timereduction[i] = publictransporttime.get(i).timetaken[publictransporttime.get(i).transportmethod] - publictransporttime.get(i).timetaken[2];
-                increasecost[i] = publictransporttime.get(i).costs[2] - publictransporttime.get(i).costs[publictransporttime.get(i).transportmethod];
-            }
-            double  W = Budget - cost;
-            int n = timereduction.length;
-            double []  changedweights  = knapSack(W, increasecost, timereduction, n)[1];
-            for (int i = 0; i < changedweights.length; i++ ){
-                if (changedweights[i] != 0) {
-                    publictransporttime.get(i).setTransportmethod(2);
-                    timing = timing - timereduction[i];
-                    cost = cost + increasecost[i];
-                }
-            }
-        } else {
-            double[] timeincrease = new double[publictransporttime.size()];
-            double[] stackingcost = new double[publictransporttime.size()];
-            for (int i = 0; i < publictransporttime.size(); i++) {
-                timeincrease[i] = publictransporttime.get(i).timetaken[0] - publictransporttime.get(i).timetaken[publictransporttime.get(i).transportmethod];
-                stackingcost[i] = publictransporttime.get(i).costs[publictransporttime.get(i).transportmethod] - publictransporttime.get(i).costs[0];
-            }
-            double  W = Budget;
-            int n = timeincrease.length;
-            double []  changedweights  = knapSack(W, stackingcost, timeincrease, n)[1];
-            for (int i = 0; i < changedweights.length; i++ ){
-                if (changedweights[i]==0) {
-                    publictransporttime.get(i).setTransportmethod(0);
-                    timing = timing + timeincrease[i];
-                    cost = cost - stackingcost[i];
-                }
-            }
-        }
-        int curr = 0;
-        String string = "Start from:\t\t\t" +locationNames.get(convert.get(publictransporttime.get(curr).from)) + "\n";
-        for (int i = 0 ; i < publictransporttime.size(); i++){
-            string = string + transportNames.get(publictransporttime.get(curr).transportmethod)+ "\t\t\t" + locationNames.get(convert.get(publictransporttime.get(curr).to)) + "\n";
-            curr = publictransporttime.get(curr).to;
-        }
-        if (cost < 0){
-            cost = 0;
-        }
-        DecimalFormat df = new DecimalFormat("#.##");
-        string = string + "\n" + "Total Time: " + timing + " mins" + "\n" + "Cost: $" +df.format(cost);
-        estimate_print.setText(string);
-    }
+//    void kruska(){
+//        Kruskal x = new Kruskal();
+//        Selected.add(0);
+//        Map<Integer,Integer> convert = new HashMap<Integer, Integer>();
+//        Path[][] SelectedMatrix = new Path[Selected.size()][Selected.size()];
+//        int icount = 0;
+//        for (Integer i : Selected){
+//            int jcount = 0;
+//            convert.put(icount,i);
+//            for (Integer j : Selected){
+//                SelectedMatrix[icount][jcount] = adjmat[i][j];
+//                SelectedMatrix[icount][jcount].adddirection(icount,jcount);
+//                jcount ++;
+//            }
+//            icount++;
+//        }
+//        for (Path[] i : SelectedMatrix) {
+//            for (Path j : i) {
+//                x.addEdge(j);
+//            }
+//        }
+//        List<Path> publictransporttime = x.kruskal(new TimeComparator());
+//        Collections.sort(publictransporttime,new Sort());
+//        double timing = 0;
+//        double cost = 0;
+//        for (Path i : publictransporttime){
+//            timing += i.timetaken[i.transportmethod];
+//            cost += i.costs[i.transportmethod];
+//        }
+//        double Budget = Double.parseDouble(budgetfill.getText().toString());
+//        if (Budget > cost) {
+//            double[] timereduction = new double[publictransporttime.size()];
+//            double[] increasecost = new double[publictransporttime.size()];
+//            for (int i = 0; i < publictransporttime.size(); i++) {
+//                timereduction[i] = publictransporttime.get(i).timetaken[publictransporttime.get(i).transportmethod] - publictransporttime.get(i).timetaken[2];
+//                increasecost[i] = publictransporttime.get(i).costs[2] - publictransporttime.get(i).costs[publictransporttime.get(i).transportmethod];
+//            }
+//            double  W = Budget - cost;
+//            int n = timereduction.length;
+//            double []  changedweights  = knapSack(W, increasecost, timereduction, n)[1];
+//            for (int i = 0; i < changedweights.length; i++ ){
+//                if (changedweights[i] != 0) {
+//                    publictransporttime.get(i).setTransportmethod(2);
+//                    timing = timing - timereduction[i];
+//                    cost = cost + increasecost[i];
+//                }
+//            }
+//        } else {
+//            double[] timeincrease = new double[publictransporttime.size()];
+//            double[] stackingcost = new double[publictransporttime.size()];
+//            for (int i = 0; i < publictransporttime.size(); i++) {
+//                timeincrease[i] = publictransporttime.get(i).timetaken[0] - publictransporttime.get(i).timetaken[publictransporttime.get(i).transportmethod];
+//                stackingcost[i] = publictransporttime.get(i).costs[publictransporttime.get(i).transportmethod] - publictransporttime.get(i).costs[0];
+//            }
+//            double  W = Budget;
+//            int n = timeincrease.length;
+//            double []  changedweights  = knapSack(W, stackingcost, timeincrease, n)[1];
+//            for (int i = 0; i < changedweights.length; i++ ){
+//                if (changedweights[i]==0) {
+//                    publictransporttime.get(i).setTransportmethod(0);
+//                    timing = timing + timeincrease[i];
+//                    cost = cost - stackingcost[i];
+//                }
+//            }
+//        }
+//        int curr = 0;
+//        String string = "Start from:\t\t\t" +locationNames.get(convert.get(publictransporttime.get(curr).from)) + "\n";
+//        for (int i = 0 ; i < publictransporttime.size(); i++){
+//            string = string + transportNames.get(publictransporttime.get(curr).transportmethod)+ "\t\t\t" + locationNames.get(convert.get(publictransporttime.get(curr).to)) + "\n";
+//            curr = publictransporttime.get(curr).to;
+//        }
+//        if (cost < 0){
+//            cost = 0;
+//        }
+//        DecimalFormat df = new DecimalFormat("#.##");
+//        string = string + "\n" + "Total Time: " + timing + " mins" + "\n" + "Cost: $" +df.format(cost);
+//        estimate_print.setText(string);
+//    }
 
     public void onCheckboxClicked(View view) {
         // Is the view now checked?
