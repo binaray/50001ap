@@ -1,6 +1,8 @@
 package com.five_o_one.ap1d;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,19 +10,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class LocatorFragment extends Fragment{
+public class LocatorFragment extends Fragment implements GoogleMap.OnMarkerClickListener{
     private static final String ARG_DATALIST = "datalist";
     private static final String ARG_RANDOMNO="randomNum";
+    MapView mMapView;
+    private GoogleMap googleMap;
+    private static LocatorFragment fragment=null;
 
     private List<LocationData> dataList;
-    private TextView tv;
-    private static LocatorFragment fragment=null;
 
     public LocatorFragment() {
         // Required empty public constructor
@@ -49,17 +60,96 @@ public class LocatorFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_locator, container, false);
-        tv=v.findViewById(R.id.testView);
-        return v;
+        View rootView = inflater.inflate(R.layout.fragment_locator, container, false);
+
+        mMapView = (MapView) rootView.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+
+        mMapView.onResume(); // needed to get the map to display immediately
+
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+                                 @Override
+                                 public void onMapReady(GoogleMap mMap) {
+                                     Marker marker;
+                                     googleMap = mMap;
+                                     Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                                     List<Address> addresses;
+
+
+
+                                     try {
+                                         // GET LATITUDE AND LONGITUDE
+                                         addresses = geocoder.getFromLocationName("Resorts World Sentosa", 1);
+                                         double latitude = addresses.get(0).getLatitude();
+                                         double longitude = addresses.get(0).getLongitude();
+                                         Log.i("Ken Jyi", "Sentosa is at latitude " + latitude
+                                                 + " and longitude " + longitude);
+
+
+                                         // MOVE CAMERA TO ADDRESS
+                                         LatLng location = new LatLng(latitude, longitude);
+
+                                         marker = mMap.addMarker(new MarkerOptions().position(location).title("Resorts World Sentosa"));
+                                         marker.setTag(location);
+                                         mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+
+                                         marker.setPosition(location);
+                                         mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+                                         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+
+                                     } catch (Exception e) {
+                                         e.printStackTrace();
+                                     }
+
+
+//                // For dropping a marker at a point on the Map
+//                LatLng sydney = new LatLng(-34, 151);
+//                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
+//
+//                // For zooming automatically to the location of the marker
+//                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+//                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                                 }
+                             }
+        );
+        return rootView;
     }
 
-    public void locate(int currentPos) {
-        //show location
-        String s= dataList.get(currentPos).getName();
-        Log.v("Passed to locator!",s);
-        tv.setText(s);
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        String name = marker.getTitle();
+        if(name.equals("Resorts World Sentosa")){
+            Log.i("Kenjyi", "The button works!");
+            return true;
+        }
+        return false;
     }
+
+    public void locate(int currentPos){
+        //show location
+        String s = dataList.get(currentPos).getName();
+    }
+
+    //    @Override
+//    public void onMainFragmentInteraction(int position) {
+//        //do nothing
+//    }
+//
+//    @Override
+//    public void onLocationAdded(int position) {
+//        //do nothing
+//    }
+//
+//    @Override
+//    public void onLocate(int currentPos) {
+//        //show location
+//        String s= dataList.get(currentPos).getName();
+//    }
 
 //    // For interfacing to main activity if needed
 //    // TODO: Rename method, update argument and hook method into UI event
