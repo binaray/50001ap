@@ -36,7 +36,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     //-----Variables------
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "db";
-
     private final Context context;
     private static SQLiteDatabase db;
     private static DatabaseHelper sInstance;
@@ -148,16 +147,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         List<LocationData> datalist=new ArrayList();
         Cursor c= db.query(TABLE_NAME, null, null, null, null, null, null);
         if (c != null) {
-//            final GsonBuilder builder=new GsonBuilder();
-//            builder.serializeSpecialFloatingPointValues();
+            final GsonBuilder builder=new GsonBuilder();
+            builder.serializeSpecialFloatingPointValues();
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-//                Gson gson=builder.create();
+                Gson gson=builder.create();
                 LocationData data=new LocationData();
-//                Path[] paths=gson.fromJson(c.getString(c.getColumnIndex(COLUMN_Paths)),Path[].class);
+                Path[] paths=gson.fromJson(c.getString(c.getColumnIndex(COLUMN_Paths)),Path[].class);
                 data.setId(c.getInt(c.getColumnIndex(COLUMN_ID)));
                 data.setName(c.getString(c.getColumnIndex(COLUMN_Name)));
                 data.setDetails(c.getString(c.getColumnIndex(COLUMN_Details)));
-//                data.setPaths(paths);     //not used in MainActivity
+                data.setPaths(paths);     //not used in MainActivity
                 data.setImageUrl(c.getInt(c.getColumnIndex(COLUMN_ImageUrl)));
                 data.setSelected(c.getInt(c.getColumnIndex(COLUMN_Selected)));
                 Log.v("Location data:",data.toString());
@@ -171,12 +170,33 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     List<LocationData> getSelectedDataList(){
         db = getReadableDatabase();
         List<LocationData> datalist=new ArrayList();
+        final GsonBuilder builder=new GsonBuilder();
+        builder.serializeSpecialFloatingPointValues();
+
+        final String WHERE0 = "CAST("+COLUMN_ID+" as TEXT) = ?";
+        final String[] WHEREARGS0 = new String[] { "1" };
+        Cursor c0= db.query(TABLE_NAME, null, WHERE0, WHEREARGS0, null, null, null);
+        if (c0 != null) {
+            for (c0.moveToFirst(); !c0.isAfterLast(); c0.moveToNext()) {
+                Gson gson=builder.create();
+                LocationData data=new LocationData();
+                Path[] paths=gson.fromJson(c0.getString(c0.getColumnIndex(COLUMN_Paths)),Path[].class);
+
+                data.setName(c0.getString(c0.getColumnIndex(COLUMN_Name)));
+                data.setDetails(c0.getString(c0.getColumnIndex(COLUMN_Details)));
+                data.setPaths(paths);
+                data.setImageUrl(c0.getInt(c0.getColumnIndex(COLUMN_ImageUrl)));
+                data.setSelected(c0.getInt(c0.getColumnIndex(COLUMN_Selected)));
+                Log.v("Selected data:",data.toString());
+                datalist.add(data);
+            }
+            c0.close();
+        }
+
         final String WHERE = "CAST("+COLUMN_Selected+" as TEXT) = ?";
         final String[] WHEREARGS = new String[] { "1" };
         Cursor c= db.query(TABLE_NAME, null, WHERE, WHEREARGS, null, null, null);
         if (c != null) {
-            final GsonBuilder builder=new GsonBuilder();
-            builder.serializeSpecialFloatingPointValues();
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
                 Gson gson=builder.create();
                 LocationData data=new LocationData();
