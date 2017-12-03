@@ -120,6 +120,17 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
         }
     }
 
+    void setFeatured(int position){
+        currentPos=position;
+        featured = dataList.get(position);
+        String title="Selected Location: ";
+        title=title.concat(featured.getName());
+        featuredName.setText(title);
+        featuredImg.setImageResource(featured.getImageUrl());
+        featuredDetails.setText(featured.getDetails());
+        onItemSelected(position);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -134,14 +145,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
 
     @Override
     public void onItemClicked(int position) {
-        currentPos=position;
-        featured = dataList.get(position);
-        String title="Selected Location: ";
-        title=title.concat(featured.getName());
-        featuredName.setText(title);
-        featuredImg.setImageResource(featured.getImageUrl());
-        featuredDetails.setText(featured.getDetails());
-        onItemSelected(position);
+        setFeatured(position);
     }
 
     @Override
