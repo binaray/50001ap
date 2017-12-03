@@ -1,5 +1,6 @@
 package com.five_o_one.ap1d;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -60,7 +61,13 @@ public class ItinenaryActivity extends AppCompatActivity {
         bruteforcebutton.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                ProgressDialog pd;
+
                 new AsyncTask<String, Integer, Exception>() {
+                    @Override
+                    protected void onPreExecute(){
+
+                    }
                     @Override
                     protected Exception doInBackground(String... strings) {
                         try {

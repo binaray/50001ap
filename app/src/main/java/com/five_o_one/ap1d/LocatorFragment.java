@@ -4,29 +4,36 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocatorFragment extends Fragment implements MainFragment.OnMainFragmentInteractionListener{
+public class LocatorFragment extends Fragment{
     private static final String ARG_DATALIST = "datalist";
     private static final String ARG_RANDOMNO="randomNum";
 
     private List<LocationData> dataList;
+    private TextView tv;
+    private static LocatorFragment fragment=null;
 
     public LocatorFragment() {
         // Required empty public constructor
     }
 
-    public static LocatorFragment newInstance(List<LocationData> dataList, int rand) {
-        LocatorFragment fragment = new LocatorFragment();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_DATALIST, (ArrayList) dataList);
-        args.putInt(ARG_RANDOMNO,rand);
-        fragment.setArguments(args);
+    public static LocatorFragment getInstance(List<LocationData> dataList){
+        if (fragment==null) {
+            fragment = new LocatorFragment();
+            Bundle args = new Bundle();
+            args.putParcelableArrayList(ARG_DATALIST, (ArrayList) dataList);
+            fragment.setArguments(args);
+            return fragment;
+        }
         return fragment;
     }
 
@@ -42,23 +49,16 @@ public class LocatorFragment extends Fragment implements MainFragment.OnMainFrag
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_locator, container, false);
+        View v= inflater.inflate(R.layout.fragment_locator, container, false);
+        tv=v.findViewById(R.id.testView);
+        return v;
     }
 
-    @Override
-    public void onMainFragmentInteraction(int position) {
-        //do nothing
-    }
-
-    @Override
-    public void onLocationAdded(int position) {
-        //do nothing
-    }
-
-    @Override
-    public void onLocate(int currentPos) {
+    public void locate(int currentPos) {
         //show location
         String s= dataList.get(currentPos).getName();
+        Log.v("Passed to locator!",s);
+        tv.setText(s);
     }
 
 //    // For interfacing to main activity if needed

@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     @Override
     public void onLocate(int currentPos) {
         viewPager.setCurrentItem(1);
+        LocatorFragment.getInstance(dataList).locate(currentPos);
     }
 
     public class SectionPagerAdapter extends FragmentPagerAdapter {
@@ -205,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
                 default:
                     return MainFragment.newInstance(dataList,rand);
                 case 1:
-                    return LocatorFragment.newInstance(dataList,rand);
+                    return LocatorFragment.getInstance(dataList);
             }
         }
         @Override
