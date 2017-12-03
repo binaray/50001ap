@@ -35,7 +35,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     Button locateButton;
     private static int currentPos;
     private OnMainFragmentInteractionListener mListener;
-
+    private static MainFragment fragment;
 
     public MainFragment() {
         // Required empty public constructor
@@ -47,6 +47,18 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
         args.putParcelableArrayList(ARG_DATALIST, (ArrayList) dataList);
         args.putInt(ARG_RANDOMNO,rand);
         fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static MainFragment getInstance(List<LocationData> dataList,int rand) {
+        if (fragment == null) {
+            fragment = new MainFragment();
+            Bundle args = new Bundle();
+            args.putParcelableArrayList(ARG_DATALIST, (ArrayList) dataList);
+            args.putInt(ARG_RANDOMNO,rand);
+            fragment.setArguments(args);
+            return fragment;
+        }
         return fragment;
     }
 
