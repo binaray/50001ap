@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,9 +25,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     private static final String ARG_DATALIST = "datalist";
     private static final String ARG_RANDOMNO="randomNum";
 
-    private DatabaseHelper databaseHelper;
     private List<LocationData> dataList;
-    private String mParam2;
     private LinearLayoutManager linearLayoutManager;
     private ImageView featuredImg;
     private TextView featuredName;
@@ -79,6 +78,9 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
         featuredImg.setImageResource(featured.getImageUrl());
         featuredDetails.setText(featured.getDetails());
         RecyclerView rv= (RecyclerView) view.findViewById(R.id.recycler_v);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(),
+                linearLayoutManager.getOrientation());
+        rv.addItemDecoration(dividerItemDecoration);
         MyAdapter adapter=new MyAdapter(dataList);
         rv.setAdapter(adapter);
         rv.setLayoutManager(linearLayoutManager);
@@ -88,6 +90,12 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
             @Override
             public void onClick(View view) {
                 mListener.onLocationAdded(currentPos);
+            }
+        });
+        locateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onLocate(currentPos);
             }
         });
         return view;
@@ -133,5 +141,6 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     public interface OnMainFragmentInteractionListener {
         void onMainFragmentInteraction(int position);
         void onLocationAdded(int position);
+        void onLocate(int currentPos);
     }
 }

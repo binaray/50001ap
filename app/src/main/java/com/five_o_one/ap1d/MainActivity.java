@@ -4,7 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     private Button itinenaryButton;
     private List<Integer> selectedPositions=new ArrayList<Integer>();
     private SelectedListAdapter selectedListAdapter;
+    private SharedPreferences preferences;
 
     @SuppressLint("StaticFieldLeak")
     @Override
@@ -95,26 +99,32 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     @Override
     protected void onStart() {
         super.onStart();
-        new AsyncTask<String, Integer, Exception>() {
-            @Override
-            protected void onPreExecute(){
-                drawerLayout.openDrawer(Gravity.LEFT);
-            }
-            @Override
-            protected Exception doInBackground(String... strings) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    return e;
+        preferences= PreferenceManager.getDefaultSharedPreferences(this);
+        if (preferences.getBoolean(getString(R.string.key_firstStart),true)) {
+            new AsyncTask<String, Integer, Exception>() {
+                @Override
+                protected void onPreExecute() {
+                    drawerLayout.openDrawer(Gravity.LEFT);
                 }
-                return null;
-            }
-            @Override
-            protected void onPostExecute(Exception e){
-                drawerLayout.closeDrawer(Gravity.LEFT);
-            }
-        }.execute();
+
+                @Override
+                protected Exception doInBackground(String... strings) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return e;
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Exception e) {
+                    drawerLayout.closeDrawer(Gravity.LEFT);
+                }
+            }.execute();
+            preferences.edit().putBoolean(getString(R.string.key_firstStart),false).apply();
+        }
     }
 
     public void setupUi(){
@@ -165,13 +175,21 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
 
     @Override
     public void onLocationAdded(int position) {
+        findViewById(android.R.id.empty).setVisibility(View.GONE);
+        itinenaryButton.setVisibility(View.VISIBLE);
         if (selectedPositions.contains(position)) Toast.makeText(this,"Location has already been added!",Toast.LENGTH_SHORT).show();
         else {
             dataList.get(position).setSelected(1);
             databaseHelper.updateSelected(dataList.get(position));
             selectedPositions.add(position);
             selectedListAdapter.notifyDataSetChanged();
+            Toast.makeText(this,"Location added to itinerary!",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onLocate(int currentPos) {
+        viewPager.setCurrentItem(1);
     }
 
     public class SectionPagerAdapter extends FragmentPagerAdapter {
@@ -187,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
                 default:
                     return MainFragment.newInstance(dataList,rand);
                 case 1:
-                    return LocatorFragment.newInstance("a","b");
+                    return LocatorFragment.newInstance(dataList,rand);
             }
         }
         @Override
@@ -227,17 +245,22 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     }
 
     private class SelectedListAdapter extends ArrayAdapter<Integer>{
+        Handler mHandler = new Handler();
+        //delay in milliseconds
+        private int mInitialDelay = 1000;
+        private final int DELAY_OFFSET = 1000;
 
         public SelectedListAdapter() {
             super(MainActivity.this,R.layout.nav_drawer_item ,selectedPositions);
+            if (selectedPositions.size() != 0) {
+                findViewById(android.R.id.empty).setVisibility(View.GONE);
+                itinenaryButton.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
             final int index=selectedPositions.get(position);
-
-            findViewById(android.R.id.empty).setVisibility(View.GONE);
-            itinenaryButton.setVisibility(View.VISIBLE);
 
             LayoutInflater inflater = (LayoutInflater) MainActivity.this
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -249,12 +272,12 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
                 public void onClick(View view) {
                     dataList.get(index).setSelected(0);
                     databaseHelper.updateSelected(dataList.get(index));
-                    if (parent.getChildCount() == 0) {
+                    selectedPositions.remove(position);
+                    notifyDataSetChanged();
+                    if (selectedPositions.size() == 0) {
                         findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
                         itinenaryButton.setVisibility(View.GONE);
                     }
-                    selectedPositions.remove(position);
-                    notifyDataSetChanged();
                 }
             });
             return rowView;
