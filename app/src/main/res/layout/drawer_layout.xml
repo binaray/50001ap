@@ -80,39 +80,4 @@
             android:text="Process itinenary"
             android:visibility="gone"/>
     </RelativeLayout>
-    <!--<FrameLayout-->
-        <!--android:layout_width="300dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:animateLayoutChanges="true"-->
-        <!--android:layout_gravity="start"-->
-        <!--android:choiceMode="singleChoice">-->
-        <!--<ListView android:id="@+id/drawer_list"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_gravity="start"-->
-            <!--android:padding="10dp"-->
-            <!--android:showDividers="middle"-->
-            <!--android:divider="?android:dividerHorizontal"-->
-            <!--android:background="@color/textColorPrimaryInverse"-->
-            <!--android:orientation="vertical"-->
-            <!--android:animateLayoutChanges="true"/>-->
-        <!--&lt;!&ndash; The "empty" view to show when there are no items in the "list" view defined above. &ndash;&gt;-->
-        <!--<TextView android:id="@android:id/empty"-->
-            <!--style="?android:textAppearanceSmall"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:padding="32dp"-->
-            <!--android:text="@string/message_empty_layout_changes"-->
-            <!--android:textColor="@color/textColorPrimary" />-->
-        <!--<Button-->
-            <!--android:id="@+id/process_itinerary"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="bottom|right"-->
-            <!--android:layout_margin="10dp"-->
-            <!--android:padding="10dp"-->
-            <!--android:text="Process itinenary"-->
-            <!--android:visibility="gone"/>-->
-    <!--</FrameLayout>-->
 </android.support.v4.widget.DrawerLayout>

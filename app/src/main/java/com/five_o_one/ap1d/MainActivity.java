@@ -177,7 +177,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     public void onLocationAdded(int position) {
         findViewById(android.R.id.empty).setVisibility(View.GONE);
         itinenaryButton.setVisibility(View.VISIBLE);
-        if (selectedPositions.contains(position)) Toast.makeText(this,"Location has already been added!",Toast.LENGTH_SHORT).show();
+        if (position==0) Toast.makeText(this,"Selected location is the start point!",Toast.LENGTH_SHORT).show();
+        else if (selectedPositions.contains(position)) Toast.makeText(this,"Location has already been added!",Toast.LENGTH_SHORT).show();
         else {
             dataList.get(position).setSelected(1);
             databaseHelper.updateSelected(dataList.get(position));
@@ -246,11 +247,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     }
 
     private class SelectedListAdapter extends ArrayAdapter<Integer>{
-        Handler mHandler = new Handler();
-        //delay in milliseconds
-        private int mInitialDelay = 1000;
-        private final int DELAY_OFFSET = 1000;
-
         public SelectedListAdapter() {
             super(MainActivity.this,R.layout.nav_drawer_item ,selectedPositions);
             if (selectedPositions.size() != 0) {
