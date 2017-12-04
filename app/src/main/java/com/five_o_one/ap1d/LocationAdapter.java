@@ -36,7 +36,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     private final List<Route> mLocationList;
     private final LayoutInflater mInflater;
 
-    class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class LocationHolder extends RecyclerView.ViewHolder {
 
         public final TextView locationView;
         public final TextView timeView;
@@ -55,15 +55,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             timeView = (TextView) itemView.findViewById(R.id.time);
             vehicleView = (ImageView) itemView.findViewById(R.id.transportsymbol);
             this.mAdapter = adapter;
-            itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            // All we do here is prepend "Clicked! " to the text in the view, to verify that
-            // the correct item was clicked. The underlying data does not change.
-            locationView.setText ("Clicked! "+ locationView.getText());
-        }
     }
 
     public LocationAdapter(Context context, List<Route> locationList) {
