@@ -2,8 +2,11 @@ package com.five_o_one.ap1d;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -99,6 +102,9 @@ public class ItinenaryActivity extends AppCompatActivity {
                     mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
                     // Create an adapter and supply the data to be displayed.
                     mAdapter = new LocationAdapter(ItinenaryActivity.this, itenenaryData.travelRoutes);
+                    // Create dividers
+                    mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getApplicationContext()));
+
                     // Connect the adapter with the recycler view.
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the recycler view a default layout manager.
@@ -617,5 +623,56 @@ class Route{
     public String getTimeCost() {
         return String.valueOf(timeCost);
     }
+}
+class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
+
+    private Drawable mDivider;
+
+
+
+    public SimpleDividerItemDecoration(Context context) {
+
+        mDivider = context.getResources().getDrawable(R.drawable.line_divider);
+
+    }
+
+
+
+    @Override
+
+    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
+        int left = parent.getPaddingTop();
+
+        int right = parent.getHeight() - parent.getPaddingRight();
+
+
+
+        int childCount = parent.getChildCount();
+
+        for (int i = 0; i < childCount; i++) {
+
+            View child = parent.getChildAt(i);
+
+
+
+            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+
+
+
+            int top = child.getBottom() + params.bottomMargin;
+
+            int bottom = top + mDivider.getIntrinsicHeight();
+
+
+
+            mDivider.setBounds(left, top, right, bottom);
+
+            mDivider.draw(c);
+
+        }
+
+    }
+
 }
 
