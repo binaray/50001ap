@@ -96,7 +96,7 @@ public class LocatorFragment extends Fragment implements GoogleMap.OnMarkerClick
                         addresses = geocoder.getFromLocationName(ii.getName(), 1);
                         double latitude = addresses.get(0).getLatitude();
                         double longitude = addresses.get(0).getLongitude();
-                        Log.i("Ken Jyi", "Sentosa is at latitude " + latitude
+                        Log.i("Ken Jyi", ii.getName() + " is at latitude " + latitude
                                 + " and longitude " + longitude);
 
 

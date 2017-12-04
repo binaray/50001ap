@@ -59,15 +59,17 @@ public class ItinenaryActivity extends AppCompatActivity {
 
         databaseHelper=DatabaseHelper.getInstance(this);
         data=databaseHelper.getSelectedDataList();
-        MapViewFragment.getInstance(dataList).locate(currentPos);
+        MapViewFragment fragment = MapViewFragment.newInstance(data);
 
 //        int algorithm = getIntent().getIntExtra();
 //        double budget = getIntent().getIntExtra();
 
-        int algorithm = 1;
-        budget = 10;
 
-        if(algorithm == 0){
+        Bundle itinenaryOps = getIntent().getExtras();
+        int algoType=itinenaryOps.getInt(getString(R.string.algoes_key));
+        budget=itinenaryOps.getDouble(getString(R.string.budget_key));
+
+        if(algoType == 0){
             new AsyncTask<String, Integer, Exception>() {
                 ProgressDialog pd;
                 @Override
@@ -104,7 +106,7 @@ public class ItinenaryActivity extends AppCompatActivity {
                 }
             }.execute();
         }
-        else if(algorithm == 1){
+        else if(algoType == 1){
             new AsyncTask<String, Integer, Exception>() {
                 ProgressDialog pd;
                 @Override
