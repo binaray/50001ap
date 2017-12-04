@@ -40,6 +40,7 @@ public class MapViewFragment extends Fragment {
     private static MapViewFragment fragment=null;
     private static final String ARG_DATALIST = "data";
     private List<LocationData> data;
+    private DatabaseHelper dbHelper;
     List<Address> addresses;
 
     public MapViewFragment(){
@@ -73,17 +74,17 @@ public class MapViewFragment extends Fragment {
         if (getArguments() != null) {
             data = (ArrayList) getArguments().getParcelableArrayList(ARG_DATALIST);
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_map_view, container, false);
 
+        dbHelper=DatabaseHelper.getInstance(getContext());
+        data=dbHelper.getSelectedDataList();
+        
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
-
-
         mMapView.onResume(); // needed to get the map to display immediately
 
         try {
@@ -98,9 +99,7 @@ public class MapViewFragment extends Fragment {
                 googleMap = mMap;
                 Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
 
-
                 for(LocationData ii: data) {
-
                     try {
                         // GET LATITUDE AND LONGITUDE
                         //addresses = geocoder.getFromLocationName("Resorts World Sentosa", 1);
@@ -110,7 +109,6 @@ public class MapViewFragment extends Fragment {
                         Log.i("Ken Jyi", ii.getName() + " is at latitude " + latitude
                                 + " and longitude " + longitude);
 
-
                         // MOVE CAMERA TO ADDRESS
                         LatLng location = new LatLng(latitude, longitude);
 
@@ -118,8 +116,6 @@ public class MapViewFragment extends Fragment {
                         marker.setTag(location);
 
                         marker.setPosition(location);
-
-
 
                     } catch (Exception e) {
                         e.printStackTrace();
