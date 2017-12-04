@@ -30,8 +30,6 @@ import java.util.Set;
 
 public class ItinenaryActivity extends AppCompatActivity {
     Set<Integer> Selected  = new HashSet<>();
-//    Path [][] adjmat = new Path[10][10];
-//    Map<Integer,String> locationNames = new HashMap<>();
     Map<Integer,String> transportNames = new HashMap<>();
     TextView estimate_print;
     EditText budgetfill;
@@ -39,6 +37,7 @@ public class ItinenaryActivity extends AppCompatActivity {
     List<LocationData> dataList;
     List<LocationData> data;
     static String res;
+    ItenenaryData itenenaryData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,16 +142,24 @@ public class ItinenaryActivity extends AppCompatActivity {
         Pathcombination[selectedMatrix.length] = 0;
 
         x.recursivefor(selectedMatrix.length,selectedMatrix.length-1, Pathcombination, selectedMatrix);
-        String text = "Start from: \t\t\t";
+
+        itenenaryData=new ItenenaryData();
+
+        String text = "Start from: \t\t\t"; //todelete
         for (int i = 0; i < x.BestPath.length; i++){
             if (i > 0) {
-                text = text + transportNames.get(x.TransportCombination[i - 1]) + "\t\t\t";
+                Route route=new Route(x.TransportCombination[i - 1],data.get(i%data.size()).getName(), (int) x.timeCost[i-1]);
+                itenenaryData.addNextRoute(route);
+                text = text + transportNames.get(x.TransportCombination[i - 1]) + "\t\t\t"; //todelete
+                Log.v("time cost of mode "+itenenaryData.getTransportForRoute(i-1)+"= ", itenenaryData.getTimeForRoute(i-1));
             }
-            text = text + data.get(i%data.size()).getName() + "\n" ;
+//            text = text + data.get(i%data.size()).getName() + "\n" ;  start path name
         }
+        itenenaryData.totalCost=x.BestPathCost;
         String totalcost = "$" + x.BestPathCost;
         String timetaken = x.BestPathTiming + "min";
-        res=text + "\nTotal Time: " + timetaken +"\nCost: " + totalcost;
+//        res=text + "\nTotal Time: " + timetaken +"\nCost: " + totalcost;
+        res=itenenaryData.toString();
     }
 
     void kruskal(){
@@ -203,7 +210,6 @@ public class ItinenaryActivity extends AppCompatActivity {
             }
             double  W = Budget - cost;
             int n = timereduction.length;
-//            Knapsack01 k = new Knapsack01();
             double []  changedweights  = knapSack(W, increasecost, timereduction, n)[1];
             for (int i = 0; i < changedweights.length; i++ ){
                 if (changedweights[i] != 0) {
@@ -221,7 +227,6 @@ public class ItinenaryActivity extends AppCompatActivity {
             }
             double  W = Budget;
             int n = timeincrease.length;
-//            Knapsack01 k = new Knapsack01();
             double []  changedweights  = knapSack(W, stackingcost, timeincrease, n)[1];
             for (int i = 0; i < changedweights.length; i++ ){
                 if (changedweights[i]==0) {
@@ -232,18 +237,20 @@ public class ItinenaryActivity extends AppCompatActivity {
             }
         }
         int curr = 0;
-        String string = "Start from:\t\t\t" +dataList.get(convert.get(publictransporttime.get(curr).from)).getName() + "\n";
+
+        itenenaryData=new ItenenaryData();
         for (int i = 0 ; i < publictransporttime.size(); i++){
-            string = string + transportNames.get(publictransporttime.get(curr).transportmethod)+ "\t\t\t" + dataList.get(convert.get(publictransporttime.get(curr).to)).getName() + "\n";
+            Path p=publictransporttime.get(curr);
+            Route route=new Route(p.transportmethod, dataList.get(convert.get(p.to)).getName(), (int) p.timetaken[p.transportmethod]);
+            itenenaryData.addNextRoute(route);
             curr = publictransporttime.get(curr).to;
         }
         if (cost < 0){
             cost = 0;
         }
-        DecimalFormat df = new DecimalFormat("#.##");
-        res = string + "\n" + "Total Time: " + timing + " mins" + "\n" + "Cost: $" +df.format(cost);
-
-//        Log.v(Integer.toString(data.s
+        for (int i=0;i<itenenaryData.travelRoutes.size();i++) Log.v("time cost of mode "+itenenaryData.getTransportForRoute(i)+"= ", itenenaryData.getTimeForRoute(i));
+        itenenaryData.totalCost=cost;
+        res=itenenaryData.toString();
     }
 
     static double[][] knapSack(double W, double wt[], double val[], int n) {
@@ -285,6 +292,7 @@ class BruteForce {
     double BestPathCost;
     double BestPathTiming = Double.POSITIVE_INFINITY;
     double CostSet;
+    double[] timeCost;
 
     public void setBestPath(int[] bestPath) {
         BestPath = bestPath;
@@ -293,7 +301,7 @@ class BruteForce {
     public void setTransportCombination(int[] transportCombination) {
         TransportCombination = transportCombination;
     }
-    public void recursivecalc(int[] Pathcombination, Path[][] adjmat, int pos, int[] costcombination){
+    public void recursivecalc(int[] Pathcombination, Path[][] adjmat, int pos, int[] costcombination, double[] timecost){
         if (pos == -1){
             double timing = 0;
             double cost = 0;
@@ -302,6 +310,7 @@ class BruteForce {
                 Path curr = adjmat[Pathcombination[j]][Pathcombination[j+1]];
                 timing += curr.timetaken[costcombination[j]];
                 cost += curr.costs[costcombination[j]];
+                timecost[j] = curr.timetaken[costcombination[j]];
             }
 
             if (cost <= CostSet && timing <= BestPathTiming){
@@ -309,13 +318,14 @@ class BruteForce {
                 BestPathCost = cost;
                 BestPath = Pathcombination.clone();
                 TransportCombination = costcombination.clone();
+                timeCost = timecost.clone();
             }
             return;
         }
 
         for (int i =0 ; i < 3; i++){
             costcombination[pos] = i;
-            recursivecalc(Pathcombination, adjmat, pos-1, costcombination);
+            recursivecalc(Pathcombination, adjmat, pos-1, costcombination, timecost);
         }
         return;
     }
@@ -328,7 +338,7 @@ class BruteForce {
                 check.add(i);
             }
             if (check.size() == numberofnodes){
-                recursivecalc(Pathcombination ,adjmat, Pathcombination.length - 2, new int[Pathcombination.length-1]);
+                recursivecalc(Pathcombination ,adjmat, Pathcombination.length - 2, new int[Pathcombination.length-1], new double[Pathcombination.length-1]);
             }
             return;
         }
@@ -498,6 +508,52 @@ class Kruskal {
 }
 
 class ItenenaryData{
+    String startLocation="Marina Bay Sands";
+    int totalTime=0;
+    double totalCost=0;
+    List<Route> travelRoutes=new ArrayList<Route>();
+    DecimalFormat df = new DecimalFormat("#.##");
 
+    void addNextRoute(Route nextRoute){
+        totalTime+=nextRoute.timeCost;
+        travelRoutes.add(nextRoute);
+    }
+
+    //String accessor methods
+    public String getTotalTime() {
+        return String.valueOf(totalTime)+" minutes";
+    }
+    public String getTotalCost() {
+        return df.format(totalCost);
+    }
+    public String getTimeForRoute(int index){
+        return travelRoutes.get(index).getTimeCost();
+    }
+    public int getTransportForRoute(int index){
+        return travelRoutes.get(index).transportType;
+    }
+
+    public String toString(){
+        return "Itinenary{" +
+                "start='" + startLocation + '\'' +
+                ",totalTime='" + getTotalTime() + '\'' +
+                ", totalCost='" + getTotalCost() + '\'' +
+                '}';
+    }
+}
+class Route{
+    int transportType=0;
+    String destination="";
+    int timeCost=0;
+
+    Route(int transportType,String destination,int timeCost){
+        this.transportType=transportType;   //0-walk 1-bus/train 2-taxi
+        this.destination=destination; //destination index from dataList
+        this.timeCost=timeCost;
+    }
+    //String accessor method
+    public String getTimeCost() {
+        return String.valueOf(timeCost);
+    }
 }
 
