@@ -21,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -37,6 +38,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final TextView locationView;
+        public final ImageView vehicleView;
         final LocationAdapter mAdapter;
 
         /**
@@ -47,7 +49,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
          */
         public LocationHolder(View itemView, LocationAdapter adapter) {
             super(itemView);
-            locationView = (TextView) itemView.findViewById(R.id.word);
+            locationView = (TextView) itemView.findViewById(R.id.location);
+            vehicleView = (ImageView) itemView.findViewById(R.id.transportsymbol);
             this.mAdapter = adapter;
             itemView.setOnClickListener(this);
         }
@@ -60,9 +63,9 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         }
     }
 
-    public LocationAdapter(Context context, LinkedList<String> wordList) {
+    public LocationAdapter(Context context, LinkedList<String> locationList) {
         mInflater = LayoutInflater.from(context);
-        this.mLocationList = wordList;
+        this.mLocationList = locationList;
     }
 
     /**
@@ -76,7 +79,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @Override
     public LocationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Inflate an item view.
-        View mItemView = mInflater.inflate(R.layout.wordlist_item, parent, false);
+        View mItemView = mInflater.inflate(R.layout.locationlist_item, parent, false);
         return new LocationHolder(mItemView, this);
     }
 

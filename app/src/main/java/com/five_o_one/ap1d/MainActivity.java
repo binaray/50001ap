@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements MainFragment.OnMainFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements MainFragment.OnMainFragmentInteractionListener, LocatorFragment.OnLocatorFragmentInteractionListener{
 
     private DatabaseHelper databaseHelper;
     private List<LocationData> dataList;
@@ -194,6 +194,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
         LocatorFragment.getInstance(dataList).locate(currentPos);
     }
 
+    @Override
+    public void onMain(int currentPos) {
+        viewPager.setCurrentItem(0);
+        MainFragment.getInstance(dataList,0).setFeatured(currentPos);
+
+    }
+
     public class SectionPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
         private String tabTitles[] = new String[]{getString(R.string.main_tab), getString(R.string.locator_tab)};
@@ -205,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
             switch (position) {
                 case 0:
                 default:
-                    return MainFragment.newInstance(dataList,rand);
+                    return MainFragment.getInstance(dataList,rand);
                 case 1:
                     return LocatorFragment.getInstance(dataList);
             }

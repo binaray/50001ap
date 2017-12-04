@@ -6,6 +6,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -29,7 +31,9 @@ public class LocatorFragment extends Fragment implements GoogleMap.OnMarkerClick
     private static final String ARG_RANDOMNO="randomNum";
     MapView mMapView;
     private GoogleMap googleMap;
+    List<Address> addresses;
     private static LocatorFragment fragment=null;
+    private OnLocatorFragmentInteractionListener nListener;
 
     private List<LocationData> dataList;
 
@@ -62,8 +66,11 @@ public class LocatorFragment extends Fragment implements GoogleMap.OnMarkerClick
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_locator, container, false);
 
+
+
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
+
 
         mMapView.onResume(); // needed to get the map to display immediately
 
@@ -73,59 +80,60 @@ public class LocatorFragment extends Fragment implements GoogleMap.OnMarkerClick
             e.printStackTrace();
         }
         mMapView.getMapAsync(new OnMapReadyCallback() {
-                                 @Override
-                                 public void onMapReady(GoogleMap mMap) {
-                                     Marker marker;
-                                     googleMap = mMap;
-                                     Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-                                     List<Address> addresses;
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                Marker marker;
+                googleMap = mMap;
+                googleMap.setOnMarkerClickListener(LocatorFragment.this);
+                Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+
+                for(LocationData ii: dataList) {
+
+                    try {
+                        // GET LATITUDE AND LONGITUDE
+                        //addresses = geocoder.getFromLocationName("Resorts World Sentosa", 1);
+                        addresses = geocoder.getFromLocationName(ii.getName(), 1);
+                        double latitude = addresses.get(0).getLatitude();
+                        double longitude = addresses.get(0).getLongitude();
+                        Log.i("Ken Jyi", "Sentosa is at latitude " + latitude
+                                + " and longitude " + longitude);
+
+
+                        // MOVE CAMERA TO ADDRESS
+                        LatLng location = new LatLng(latitude, longitude);
+
+                        marker = mMap.addMarker(new MarkerOptions().position(location).title(ii.getName()));
+                        marker.setTag(location);
+
+                        marker.setPosition(location);
 
 
 
-                                     try {
-                                         // GET LATITUDE AND LONGITUDE
-                                         addresses = geocoder.getFromLocationName("Resorts World Sentosa", 1);
-                                         double latitude = addresses.get(0).getLatitude();
-                                         double longitude = addresses.get(0).getLongitude();
-                                         Log.i("Ken Jyi", "Sentosa is at latitude " + latitude
-                                                 + " and longitude " + longitude);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                LatLngBounds singapore = new LatLngBounds(new LatLng(1.28, 103.7), new LatLng(1.3, 103.9));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(singapore.getCenter()));
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(11));
 
 
-                                         // MOVE CAMERA TO ADDRESS
-                                         LatLng location = new LatLng(latitude, longitude);
+            }
 
-                                         marker = mMap.addMarker(new MarkerOptions().position(location).title("Resorts World Sentosa"));
-                                         marker.setTag(location);
-                                         mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+        });
 
-                                         marker.setPosition(location);
-                                         mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-                                         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-
-                                     } catch (Exception e) {
-                                         e.printStackTrace();
-                                     }
-
-
-//                // For dropping a marker at a point on the Map
-//                LatLng sydney = new LatLng(-34, 151);
-//                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-//
-//                // For zooming automatically to the location of the marker
-//                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-//                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                                 }
-                             }
-        );
         return rootView;
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
         String name = marker.getTitle();
-        if(name.equals("Resorts World Sentosa")){
-            Log.i("Kenjyi", "The button works!");
-            return true;
+        for(int ii=0;ii<dataList.size();ii++) {
+            if (name.equals(dataList.get(ii).getName())) {
+                Log.i("Kenjyi", "The button works!");
+                nListener.onMain(ii);
+            }
         }
         return false;
     }
@@ -133,7 +141,35 @@ public class LocatorFragment extends Fragment implements GoogleMap.OnMarkerClick
     public void locate(int currentPos){
         //show location
         String s = dataList.get(currentPos).getName();
+        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        try {
+            addresses = geocoder.getFromLocationName(s, 1);
+            double latitude = addresses.get(0).getLatitude();
+            double longitude = addresses.get(0).getLongitude();
+            LatLng location = new LatLng(latitude, longitude);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+            googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof MainFragment.OnMainFragmentInteractionListener) {
+            nListener = (LocatorFragment.OnLocatorFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnLocatorFragmentInteractionListener");
+        }
+    }
+
+    public interface OnLocatorFragmentInteractionListener {
+        void onMain(int currentPos);
+    }
+
+
 
     //    @Override
 //    public void onMainFragmentInteraction(int position) {

@@ -201,8 +201,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 * ----------------------------------------*/
     //Default Initial Values
     static final String[] locationNames={"Marina Bay Sands","Singapore Flyer","Resort World Sentosa",
-            "Vivo City","Buddha Tooth Relic Temple","Singapore Zoo","Marina Barrage",
-            "Esplanade", "Tree Top Walk","Maxwell Food Center"};
+            "VivoCity","Buddha Tooth Relic Temple","Singapore Zoo","Marina Barrage",
+            "Esplanade-Theatres on the Bay", "TreeTop Walk","Maxwell Food Center"};
     static final String[] locationDetails={"Detail0",
             "Detail1",
             "Detail2",

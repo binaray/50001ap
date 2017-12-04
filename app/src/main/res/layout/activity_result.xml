@@ -13,7 +13,7 @@
         android:id="@+id/map"
         android:name="com.five_o_one.ap1d.MapViewFragment"
         android:layout_width="match_parent"
-        android:layout_height="181sp"
+        android:layout_height="230dp"
         tools:context="com.five_o_one.ap1d.ResultActivity" />
 
     <android.support.v7.widget.RecyclerView
