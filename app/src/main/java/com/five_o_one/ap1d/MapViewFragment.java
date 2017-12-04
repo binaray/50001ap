@@ -101,8 +101,7 @@ public class MapViewFragment extends Fragment {
 
                 for(LocationData ii: data) {
                     try {
-                        // GET LATITUDE AND LONGITUDE
-                        //addresses = geocoder.getFromLocationName("Resorts World Sentosa", 1);
+                        // GET LATITUDE AND LONGITUDE;
                         addresses = geocoder.getFromLocationName(ii.getName(), 1);
                         double latitude = addresses.get(0).getLatitude();
                         double longitude = addresses.get(0).getLongitude();
@@ -121,9 +120,9 @@ public class MapViewFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                LatLngBounds singapore = new LatLngBounds(new LatLng(1.28, 103.7), new LatLng(1.3, 103.9));
+                LatLngBounds singapore = new LatLngBounds(new LatLng(1.31, 103.8), new LatLng(1.32, 103.9));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(singapore.getCenter()));
-                mMap.moveCamera(CameraUpdateFactory.zoomTo(11));
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(10));
 
 
             }

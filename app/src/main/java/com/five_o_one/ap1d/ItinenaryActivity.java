@@ -3,11 +3,15 @@ package com.five_o_one.ap1d;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,7 +39,8 @@ import java.util.Set;
 public class ItinenaryActivity extends AppCompatActivity {
     Set<Integer> Selected  = new HashSet<>();
     Map<Integer,String> transportNames = new HashMap<>();
-    TextView estimate_print;
+    TextView totalCost;
+    TextView totalTime;
     DatabaseHelper databaseHelper;
     List<LocationData> dataList;
     List<LocationData> data;
@@ -50,16 +55,12 @@ public class ItinenaryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_itinenary);
-
         setContentView(R.layout.activity_result);
-
-
-        estimate_print = (TextView) findViewById(R.id.estimateprint);
+        totalCost = (TextView) findViewById(R.id.totalcost);
+        totalTime = (TextView) findViewById(R.id.totaltime);
 
         databaseHelper=DatabaseHelper.getInstance(this);
         data=databaseHelper.getSelectedDataList();
-        MapViewFragment fragment = MapViewFragment.newInstance(data);
 
 //        int algorithm = getIntent().getIntExtra();
 //        double budget = getIntent().getIntExtra();
@@ -92,7 +93,6 @@ public class ItinenaryActivity extends AppCompatActivity {
                 @Override
                 protected void onPostExecute(Exception e){
                     pd.dismiss();
-                    //estimate_print.setText(res);
                     if(e==null) Toast.makeText(ItinenaryActivity.this,"Brute force sucess",Toast.LENGTH_SHORT).show();
                     else Toast.makeText(ItinenaryActivity.this,"Brute force failed",Toast.LENGTH_SHORT).show();
                     // Create recycler view.
@@ -103,6 +103,18 @@ public class ItinenaryActivity extends AppCompatActivity {
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the recycler view a default layout manager.
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(ItinenaryActivity.this));
+
+                    String cost = "Cost:\n" + itenenaryData.getTotalCost();
+                    SpannableString ss1=  new SpannableString(cost);
+                    ss1.setSpan(new RelativeSizeSpan(2f), 5,cost.length(), 0); // set size
+                    //ss1.setSpan(new ForegroundColorSpan(Color.RED), 0, 5, 0);// set color
+                    String time = "Time:\n" + itenenaryData.getTotalTime();
+                    SpannableString ss2=  new SpannableString(time);
+                    ss2.setSpan(new RelativeSizeSpan(2f), 5,time.length(), 0); // set size
+                    //ss2.setSpan(new ForegroundColorSpan(Color.RED), 0, 5, 0);// set color
+
+                    totalCost.setText(ss1);
+                    totalTime.setText(ss2);
                 }
             }.execute();
         }
@@ -129,7 +141,6 @@ public class ItinenaryActivity extends AppCompatActivity {
                 @Override
                 protected void onPostExecute(Exception e){
                     pd.dismiss();
-                    //estimate_print.setText(res);
                     if(e==null) Toast.makeText(ItinenaryActivity.this,"Fast estimate sucess",Toast.LENGTH_SHORT).show();
                     else Toast.makeText(ItinenaryActivity.this,"Fast estimate failed",Toast.LENGTH_SHORT).show();
                     // Create recycler view.
@@ -140,6 +151,20 @@ public class ItinenaryActivity extends AppCompatActivity {
                     mRecyclerView.setAdapter(mAdapter);
                     // Give the recycler view a default layout manager.
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(ItinenaryActivity.this));
+                    totalCost.setText(itenenaryData.getTotalCost());
+                    totalTime.setText(itenenaryData.getTotalTime());
+
+                    String cost = "Cost:\n" + itenenaryData.getTotalCost();
+                    SpannableString ss1=  new SpannableString(cost);
+                    ss1.setSpan(new RelativeSizeSpan(2f), 5,cost.length(), 0); // set size
+                    //ss1.setSpan(new ForegroundColorSpan(Color.RED), 0, 5, 0);// set color
+                    String time = "Time:\n" + itenenaryData.getTotalTime();
+                    SpannableString ss2=  new SpannableString(time);
+                    ss2.setSpan(new RelativeSizeSpan(2f), 5,time.length(), 0); // set size
+                    //ss2.setSpan(new ForegroundColorSpan(Color.RED), 0, 5, 0);// set color
+
+                    totalCost.setText(ss1);
+                    totalTime.setText(ss2);
                 }
             }.execute();
         }
@@ -549,12 +574,19 @@ class ItenenaryData{
         travelRoutes.add(nextRoute);
     }
 
+    //minutes to hours and minutes
+//    int properTimeHrs = totalTime/60;
+//    int properTimeMins = totalTime%60;
+//
+//    String properTime = properTimeHrs + "h" + properTimeMins + "m";
+
+
     //String accessor methods
     public String getTotalTime() {
-        return String.valueOf(totalTime)+" minutes";
+        return totalTime/60 + "h" + totalTime%60 + "m";
     }
     public String getTotalCost() {
-        return df.format(totalCost);
+        return "$" + df.format(totalCost);
     }
     public String getTimeForRoute(int index){
         return travelRoutes.get(index).getTimeCost();

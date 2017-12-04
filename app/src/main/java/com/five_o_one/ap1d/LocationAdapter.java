@@ -100,6 +100,12 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         String location = mCurrent.destination;
         int transport = mCurrent.transportType;
         String timeCost = mCurrent.getTimeCost();
+        if(Integer.valueOf(timeCost)/60==0){
+            timeCost = timeCost+"min";
+        }
+        else{
+            timeCost = Integer.valueOf(timeCost)/60 + "h" + Integer.valueOf(timeCost)%60 + "m";
+        }
         // Add the data to the view holder.
         holder.locationView.setText(location);
         holder.timeView.setText(timeCost);
