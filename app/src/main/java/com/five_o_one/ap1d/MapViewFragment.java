@@ -15,11 +15,15 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+
 
 
 /**
@@ -33,6 +37,28 @@ import java.util.Locale;
 public class MapViewFragment extends Fragment {
     MapView mMapView;
     private GoogleMap googleMap;
+    private static MapViewFragment fragment=null;
+    private static final String ARG_DATALIST = "datalist";
+    private List<LocationData> dataList;
+    List<Address> addresses;
+
+    public static MapViewFragment getInstance(List<LocationData> dataList){
+
+        fragment = new MapViewFragment();
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(ARG_DATALIST, (ArrayList) dataList);
+        fragment.setArguments(args);
+        return fragment;
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            dataList = (ArrayList) getArguments().getParcelableArrayList(ARG_DATALIST);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +67,7 @@ public class MapViewFragment extends Fragment {
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
+
         mMapView.onResume(); // needed to get the map to display immediately
 
         try {
@@ -48,48 +75,47 @@ public class MapViewFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 Marker marker;
                 googleMap = mMap;
+                //googleMap.setOnMarkerClickListener(MapViewFragmentFragment.this);
                 Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-                List<Address> addresses;
+
+                for(LocationData ii: dataList) {
+
+                    try {
+                        // GET LATITUDE AND LONGITUDE
+                        //addresses = geocoder.getFromLocationName("Resorts World Sentosa", 1);
+                        addresses = geocoder.getFromLocationName(ii.getName(), 1);
+                        double latitude = addresses.get(0).getLatitude();
+                        double longitude = addresses.get(0).getLongitude();
+                        Log.i("Ken Jyi", "Sentosa is at latitude " + latitude
+                                + " and longitude " + longitude);
+
+
+                        // MOVE CAMERA TO ADDRESS
+                        LatLng location = new LatLng(latitude, longitude);
+
+                        marker = mMap.addMarker(new MarkerOptions().position(location).title(ii.getName()));
+                        marker.setTag(location);
+
+                        marker.setPosition(location);
 
 
 
-                try {
-                    // GET LATITUDE AND LONGITUDE
-                    addresses = geocoder.getFromLocationName("Resorts World", 1);
-                    double latitude = addresses.get(0).getLatitude();
-                    double longitude = addresses.get(0).getLongitude();
-                    Log.i("Ken Jyi", "Sentosa is at latitude " + latitude
-                            + " and longitude " + longitude);
-
-
-                    // MOVE CAMERA TO ADDRESS
-                    LatLng location = new LatLng(latitude, longitude);
-
-                    marker = mMap.addMarker(new MarkerOptions().position(location).title("Marker in Sentosa"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-
-                    marker.setTitle("Sentosa, Singapore");
-                    marker.setPosition(location);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-                    mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                LatLngBounds singapore = new LatLngBounds(new LatLng(1.28, 103.7), new LatLng(1.3, 103.9));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(singapore.getCenter()));
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(11));
 
-//                // For dropping a marker at a point on the Map
-//                LatLng sydney = new LatLng(-34, 151);
-//                googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-//
-//                // For zooming automatically to the location of the marker
-//                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-//                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
             }
+
         });
 
         return rootView;

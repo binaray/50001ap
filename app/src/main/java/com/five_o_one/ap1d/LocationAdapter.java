@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Shows how to implement a simple Adapter for a RecyclerView.
@@ -32,12 +33,13 @@ import java.util.LinkedList;
  */
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationHolder> {
 
-    private final LinkedList<String> mLocationList;
+    private final List<Route> mLocationList;
     private final LayoutInflater mInflater;
 
     class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final TextView locationView;
+        public final TextView timeView;
         public final ImageView vehicleView;
         final LocationAdapter mAdapter;
 
@@ -50,6 +52,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         public LocationHolder(View itemView, LocationAdapter adapter) {
             super(itemView);
             locationView = (TextView) itemView.findViewById(R.id.location);
+            timeView = (TextView) itemView.findViewById(R.id.time);
             vehicleView = (ImageView) itemView.findViewById(R.id.transportsymbol);
             this.mAdapter = adapter;
             itemView.setOnClickListener(this);
@@ -63,7 +66,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         }
     }
 
-    public LocationAdapter(Context context, LinkedList<String> locationList) {
+    public LocationAdapter(Context context, List<Route> locationList) {
         mInflater = LayoutInflater.from(context);
         this.mLocationList = locationList;
     }
@@ -93,9 +96,22 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @Override
     public void onBindViewHolder(LocationHolder holder, int position) {
         // Retrieve the data for that position.
-        String mCurrent = mLocationList.get(position);
+        Route mCurrent = mLocationList.get(position);
+        String location = mCurrent.destination;
+        int transport = mCurrent.transportType;
+        String timeCost = mCurrent.getTimeCost();
         // Add the data to the view holder.
-        holder.locationView.setText(mCurrent);
+        holder.locationView.setText(location);
+        holder.timeView.setText(timeCost);
+        if(transport==0){
+            holder.vehicleView.setImageResource(R.drawable.walking);
+        }
+        else if(transport==1){
+            holder.vehicleView.setImageResource(R.drawable.bus);
+        }
+        else if(transport==2){
+            holder.vehicleView.setImageResource(R.drawable.cab);
+        }
     }
 
     /**

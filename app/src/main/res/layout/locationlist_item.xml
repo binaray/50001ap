@@ -18,23 +18,29 @@ limitations under the License. -->
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="6dp">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:padding="6dp">>
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:layout_alignParentRight="true"
             android:id="@+id/transportsymbol"/>
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_toLeftOf="@+id/transportsymbol"
+            android:id="@+id/time"/>
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_alignParentLeft="true"
             android:id="@+id/location"/>
         <!--style="@style/word_title"-->
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 

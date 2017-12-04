@@ -2,9 +2,12 @@ package com.five_o_one.ap1d;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -32,98 +36,122 @@ public class ItinenaryActivity extends AppCompatActivity {
     Set<Integer> Selected  = new HashSet<>();
     Map<Integer,String> transportNames = new HashMap<>();
     TextView estimate_print;
-    EditText budgetfill;
     DatabaseHelper databaseHelper;
     List<LocationData> dataList;
     List<LocationData> data;
     static String res;
     ItenenaryData itenenaryData;
+    private RecyclerView mRecyclerView;
+    private LocationAdapter mAdapter;
+    private final LinkedList<String> mLocationList = new LinkedList<>();
+    private double budget;
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_itinenary);
+        //setContentView(R.layout.activity_itinenary);
+
+        setContentView(R.layout.activity_result);
+
 
         estimate_print = (TextView) findViewById(R.id.estimateprint);
-        budgetfill = (EditText) findViewById(R.id.budget);
 
         databaseHelper=DatabaseHelper.getInstance(this);
         data=databaseHelper.getSelectedDataList();
+        MapViewFragment.getInstance(dataList).locate(currentPos);
 
-        Button bruteforcebutton = (Button) findViewById(R.id.bruteforce);
-        Button fastestimatebutton = (Button) findViewById(R.id.fastestimate);
+//        int algorithm = getIntent().getIntExtra();
+//        double budget = getIntent().getIntExtra();
+
+        int algorithm = 1;
+        budget = 10;
+
+        if(algorithm == 0){
+            new AsyncTask<String, Integer, Exception>() {
+                ProgressDialog pd;
+                @Override
+                protected void onPreExecute(){
+                    pd = new ProgressDialog(ItinenaryActivity.this);
+                    pd.setTitle("Please Wait");
+                    pd.setMessage("Running algorthim");
+                    pd.show();
+                }
+                @Override
+                protected Exception doInBackground(String... strings) {
+                    try {
+                        bruteforce();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return e;
+                    }
+                    return null;
+                }
+                @Override
+                protected void onPostExecute(Exception e){
+                    pd.dismiss();
+                    //estimate_print.setText(res);
+                    if(e==null) Toast.makeText(ItinenaryActivity.this,"Brute force sucess",Toast.LENGTH_SHORT).show();
+                    else Toast.makeText(ItinenaryActivity.this,"Brute force failed",Toast.LENGTH_SHORT).show();
+                    // Create recycler view.
+                    mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+                    // Create an adapter and supply the data to be displayed.
+                    mAdapter = new LocationAdapter(ItinenaryActivity.this, itenenaryData.travelRoutes);
+                    // Connect the adapter with the recycler view.
+                    mRecyclerView.setAdapter(mAdapter);
+                    // Give the recycler view a default layout manager.
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(ItinenaryActivity.this));
+                }
+            }.execute();
+        }
+        else if(algorithm == 1){
+            new AsyncTask<String, Integer, Exception>() {
+                ProgressDialog pd;
+                @Override
+                protected void onPreExecute(){
+                    pd = new ProgressDialog(ItinenaryActivity.this);
+                    pd.setTitle("Please Wait");
+                    pd.setMessage("Running algorthim");
+                    pd.show();
+                }
+                @Override
+                protected Exception doInBackground(String... strings) {
+                    try {
+                        kruskal();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return e;
+                    }
+                    return null;
+                }
+                @Override
+                protected void onPostExecute(Exception e){
+                    pd.dismiss();
+                    //estimate_print.setText(res);
+                    if(e==null) Toast.makeText(ItinenaryActivity.this,"Fast estimate sucess",Toast.LENGTH_SHORT).show();
+                    else Toast.makeText(ItinenaryActivity.this,"Fast estimate failed",Toast.LENGTH_SHORT).show();
+                    // Create recycler view.
+                    mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+                    // Create an adapter and supply the data to be displayed.
+                    mAdapter = new LocationAdapter(ItinenaryActivity.this, itenenaryData.travelRoutes);
+                    // Connect the adapter with the recycler view.
+                    mRecyclerView.setAdapter(mAdapter);
+                    // Give the recycler view a default layout manager.
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(ItinenaryActivity.this));
+                }
+            }.execute();
+        }
 
         transportNames.put(0,"Walk to:");
         transportNames.put(1,"Bus/Train to:");
         transportNames.put(2,"Taxi to:");
 
-        bruteforcebutton.setOnClickListener( new View.OnClickListener(){
-            @SuppressLint("StaticFieldLeak")
-            @Override
-            public void onClick(View view) {
-                new AsyncTask<String, Integer, Exception>() {
-                    ProgressDialog pd;
-                    @Override
-                    protected void onPreExecute(){
-                        pd = new ProgressDialog(ItinenaryActivity.this);
-                        pd.setTitle("Please Wait");
-                        pd.setMessage("Running algorthim");
-                        pd.show();
-                    }
-                    @Override
-                    protected Exception doInBackground(String... strings) {
-                        try {
-                            bruteforce();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return e;
-                        }
-                        return null;
-                    }
-                    @Override
-                    protected void onPostExecute(Exception e){
-                        pd.dismiss();
-                        estimate_print.setText(res);
-                        if(e==null) Toast.makeText(ItinenaryActivity.this,"Brute force sucess",Toast.LENGTH_SHORT).show();
-                        else Toast.makeText(ItinenaryActivity.this,"Brute force failed",Toast.LENGTH_SHORT).show();
-                    }
-                }.execute();
-            }
-        });
 
-        fastestimatebutton.setOnClickListener( new View.OnClickListener(){
-            @SuppressLint("StaticFieldLeak")
-            @Override
-            public void onClick(View view) {
-                new AsyncTask<String, Integer, Exception>() {
-                    ProgressDialog pd;
-                    @Override
-                    protected void onPreExecute(){
-                        pd = new ProgressDialog(ItinenaryActivity.this);
-                        pd.setTitle("Please Wait");
-                        pd.setMessage("Running algorthim");
-                        pd.show();
-                    }
-                    @Override
-                    protected Exception doInBackground(String... strings) {
-                        try {
-                            kruskal();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return e;
-                        }
-                        return null;
-                    }
-                    @Override
-                    protected void onPostExecute(Exception e){
-                        pd.dismiss();
-                        estimate_print.setText(res);
-                        if(e==null) Toast.makeText(ItinenaryActivity.this,"Fast estimate sucess",Toast.LENGTH_SHORT).show();
-                        else Toast.makeText(ItinenaryActivity.this,"Fast estimate failed",Toast.LENGTH_SHORT).show();
-                    }
-                }.execute();
-            }
-        });
+//        for (int ii = 0; ii < itenenaryData.travelRoutes.size(); ii++) {
+//            itenenaryData.travelRoutes
+//        }
+
+
     }
 
     void bruteforce(){
@@ -136,7 +164,7 @@ public class ItinenaryActivity extends AppCompatActivity {
         }
 
         BruteForce x = new BruteForce();
-        x.CostSet = Double.parseDouble(budgetfill.getText().toString());
+        x.CostSet = budget;
         int[] Pathcombination = new int[selectedMatrix.length + 1];
         Pathcombination[0] = 0;
         Pathcombination[selectedMatrix.length] = 0;
@@ -200,7 +228,7 @@ public class ItinenaryActivity extends AppCompatActivity {
             cost += i.costs[i.transportmethod];
         }
 
-        double Budget = Double.parseDouble(budgetfill.getText().toString());
+        double Budget = budget;
         if (Budget > cost) {
             double[] timereduction = new double[publictransporttime.size()];
             double[] increasecost = new double[publictransporttime.size()];
