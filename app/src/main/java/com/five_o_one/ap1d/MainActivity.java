@@ -18,6 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,9 +28,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     private Button itinenaryButton;
     private List<Integer> selectedPositions=new ArrayList<Integer>();
     private SelectedListAdapter selectedListAdapter;
+    private Spinner algoSelect;
+    private EditText budgetEdit;
     private SharedPreferences preferences;
 
     @SuppressLint("StaticFieldLeak")
@@ -65,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
         container=(ListView) findViewById(R.id.drawer_list);
         itinenaryButton=(Button)findViewById(R.id.process_itinerary);
         bg_img=(ImageView)findViewById(R.id.main_bg);
+        algoSelect=(Spinner)findViewById(R.id.algoSelect);
+        budgetEdit=(EditText)findViewById(R.id.budgetEdit);
+
         rand=new Random().nextInt(10);
 
         new AsyncTask<String, Integer, Exception>() {
@@ -158,7 +166,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
         itinenaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,ItinenaryActivity.class));
+                Bundle itinenaryOps=new Bundle();
+                itinenaryOps.putInt(getString(R.string.algoes_key), (int) algoSelect.getSelectedItemId());
+                itinenaryOps.putDouble(getString(R.string.budget_key), Double.parseDouble(budgetEdit.getText().toString()));
+                Intent itinenaryIntent =new Intent(MainActivity.this,ItinenaryActivity.class);
+                itinenaryIntent.putExtras(itinenaryOps);
+                Log.v("Itinerary:",itinenaryOps.toString());
+                startActivity(itinenaryIntent);
             }
         });
 
@@ -249,8 +263,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     }
 
     public void onSettingsAction(MenuItem item) {
-        Intent settingsIntent=new Intent(this,SettingsActivity.class);
-        startActivity(settingsIntent);
+        startActivity(new Intent(this,SettingsActivity.class));
     }
 
     private class SelectedListAdapter extends ArrayAdapter<Integer>{

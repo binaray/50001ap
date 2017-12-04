@@ -8,12 +8,54 @@
         android:layout_gravity="start"
         android:background="@color/textColorPrimaryInverse"
         android:choiceMode="singleChoice">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="3dp"
+            android:paddingLeft="10dp"
+            android:text="Algorithmn selected: "
+            android:textColor="@color/textColorPrimary"
+            android:id="@+id/textAlgo" />
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/algoSelect"
+            android:entries="@array/algo_arrays"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            style="?android:textAppearanceMedium"
+            android:layout_below="@+id/textAlgo"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="3dp"
+            android:paddingLeft="10dp"
+            android:text="Enter budget (SGD): "
+            android:layout_below="@+id/algoSelect"
+            android:textColor="@color/textColorPrimary"
+            android:id="@+id/textBudget" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/budgetEdit"
+            android:text="0.00"
+            android:inputType="numberDecimal"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            style="?android:textAppearanceMedium"
+            android:layout_below="@+id/textBudget"
+            android:layout_marginBottom="10dp"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="3dp"
             android:paddingLeft="10dp"
             android:text="Starting Location: "
+            android:layout_below="@+id/budgetEdit"
             android:background="@color/colorPrimaryDark"
             android:textColor="@color/textColorPrimaryInverse"
             android:id="@+id/textView" />
@@ -49,6 +91,7 @@
             android:background="@color/textColorPrimaryInverse"
             android:divider="?android:dividerHorizontal"
             android:orientation="vertical"
+            android:layout_above="@+id/process_itinerary"
             android:showDividers="middle" />
         <!-- The "empty" view to show when there are no items in the "list" view defined above. -->
         <TextView
@@ -71,7 +114,6 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="10dp"
             android:padding="10dp"
-            android:text="Process itinenary"
-            android:visibility="gone"/>
+            android:text="Process itinenary"/>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

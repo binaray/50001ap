@@ -27,4 +27,6 @@
     <string name="MaxwellFoodCentre">maxwell road hawker centre</string>
     <string name="title_itinerary">Itinerary</string>
     <string name="key_firstStart">key_first_start</string>
+    <string name="algoes_key">algorithmn</string>
+    <string name="budget_key">budget</string>
 </resources>
