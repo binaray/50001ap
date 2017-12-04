@@ -12,7 +12,7 @@
     <string name="title_settings">Settings</string>
     <string name="drawer_open">Navigation drawer open</string>
     <string name="drawer_close">Navigation drawer close</string>
-    <string name="drawer_title">Itinenary Selection</string>
+    <string name="drawer_title">Itinerary Selection</string>
     <string name="message_empty_layout_changes">Add locations from main to begin!</string>
 
     <string name="MarinaBaySands">marina bay sands</string>

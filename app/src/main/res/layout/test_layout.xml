@@ -24,7 +24,7 @@
             android:entries="@array/algo_arrays"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            style="?android:textAppearanceMedium"
+            style="android:spinnerDropDownItemStyle"
             android:layout_below="@+id/textAlgo"
             android:layout_marginBottom="10dp"/>
 
@@ -114,6 +114,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="10dp"
             android:padding="10dp"
+            android:textColor="@color/textColorPrimaryInverse"
             android:text="Process itinenary"/>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

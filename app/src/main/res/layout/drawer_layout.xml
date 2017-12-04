@@ -20,7 +20,6 @@
             android:paddingTop="3dp"
             android:paddingLeft="10dp"
             android:text="Algorithmn selected: "
-            android:textColor="@color/textColorPrimary"
             android:id="@+id/textAlgo" />
         <Spinner
             android:layout_width="match_parent"
@@ -41,7 +40,6 @@
             android:paddingLeft="10dp"
             android:text="Enter budget (SGD): "
             android:layout_below="@+id/algoSelect"
-            android:textColor="@color/textColorPrimary"
             android:id="@+id/textBudget" />
         <EditText
             android:layout_width="match_parent"
@@ -110,7 +108,7 @@
             android:layout_gravity="center"
             android:padding="32dp"
             android:text="@string/message_empty_layout_changes"
-            android:textColor="@color/textColorPrimary" />
+            android:textColor="@color/textColorSecondary" />
 
         <Button
             android:id="@+id/process_itinerary"
@@ -121,7 +119,8 @@
             android:layout_margin="10dp"
             android:paddingBottom="10dp"
             android:paddingRight="10dp"
-            android:text="Process itinenary"
+            android:text="Go!"
+            android:backgroundTint="@color/colorPrimaryDark"
             android:visibility="gone"/>
     </RelativeLayout>
 </android.support.v4.widget.DrawerLayout>

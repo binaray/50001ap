@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference
-        android:title="Username"
+        android:drawableTint="@color/colorPrimaryDark"
         android:key="@string/key_username"
-        android:summary="Enter or change your username" />
+        android:summary="Enter or change your username"
+        android:textColor="@color/textColorSecondary"
+        android:title="Username" />
     <CheckBoxPreference
         android:title="Application Updates"
         android:defaultValue="false"

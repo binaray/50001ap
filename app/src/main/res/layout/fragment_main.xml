@@ -7,43 +7,42 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="194dp"
+        android:layout_height="245dp"
         android:layout_marginBottom="20dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
-        android:alpha="0.8"
         android:animateLayoutChanges="true"
         android:background="@drawable/layout_feature_bg"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/featured_img"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img6" />
 
         <TextView
             android:id="@+id/featured_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
+            android:layout_alignBottom="@+id/featured_img"
+            android:layout_alignEnd="@+id/addButton"
+            android:alpha="0.8"
+            android:background="@color/colorPrimary"
+            android:paddingLeft="4dp"
             android:text="Featured Location:"
             android:textColor="@color/textColorPrimary" />
 
-        <ImageView
-            android:id="@+id/featured_img"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
-            android:layout_alignStart="@+id/featured_title"
-            android:layout_alignTop="@+id/featured_details"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img6" />
-
         <TextView
             android:id="@+id/featured_details"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/featured_title"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"
-            android:layout_toEndOf="@+id/featured_img"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/featured_img"
+            android:paddingTop="2dp"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
             android:text="Error. Unknown. No known details recorded. Error.errorerror" />
 
         <Button
@@ -51,19 +50,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignStart="@+id/featured_details"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="2dp"
             android:padding="0dp"
-            android:text="Add" />
+            android:text="Add"
+            android:textColor="@color/textColorPrimaryInverse"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/locate_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/addButton"
-            android:layout_alignBottom="@+id/addButton"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@+id/addButton"
             android:padding="0dp"
-            android:text="Locate" />
+            android:text="Locate"
+            android:textColor="@color/textColorPrimaryInverse"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:textAllCaps="false" />
     </RelativeLayout>
 
     <TextView

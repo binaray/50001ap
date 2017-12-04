@@ -223,16 +223,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     static final String[] locationNames={"Marina Bay Sands","Singapore Flyer","Resort World Sentosa",
             "VivoCity","Buddha Tooth Relic Temple","Singapore Zoo","Marina Barrage",
             "Esplanade-Theatres on the Bay", "TreeTop Walk","Maxwell Food Center"};
-    static final String[] locationDetails={"Marina Bay Sands is one of two winning proposals for Singapore's first integrated resorts. The complex is topped by a 340-metre-long (1,120 ft) SkyPark with a capacity of 3,900 people and a 150 m (490 ft) infinity swimming pool, set on top of the world's largest public cantilevered platform.",
+    static final String[] locationDetails={"Marina Bay Sands is one of two winning proposals for Singapore's first integrated resorts. The complex is topped by a 340-metre-long (1,120 ft).",
             "The Singapore Flyer is a giant Ferris wheel in Singapore. The Flyer has an overall height of 165 metres (541 ft) and was the world's tallest Ferris wheel until the 167.6 m (550 ft) High Roller.",
-            "Resorts World Sentosa (Abbreviation: RWS) is an integrated resort on the island of Sentosa, off the southern coast of Singapore. The key attractions include one of Singapore's two casinos, a Universal Studios theme park, Adventure Cove Water Park, and S.E.A. Aquarium, which includes the world's largest oceanarium.",
-            "VivoCity (Chinese: 怡丰城) is the largest shopping mall in Singapore. Located in the HarbourFront precinct of Bukit Merah, it was designed by the Japanese architect Toyo Ito. Its name is derived from the word vivacity.",
+            "Resorts World Sentosa (Abbreviation: RWS) is an integrated resort on the island of Sentosa, off the southern coast of Singapore.",
+            "VivoCity (Chinese: 怡丰城) is the largest shopping mall in Singapore. Located in the HarbourFront precinct of Bukit Merah, it was designed by the Japanese architect Toyo Ito.",
             "The Buddha Tooth Relic Temple and Museum is a Buddhist temple and museum complex located in the Chinatown district of Singapore.",
-            "The Singapore Zoo, formerly known as the Singapore Zoological Gardens and commonly known locally as the Mandai Zoo, occupies 28 hectares (69 acres) on the margins of Upper Seletar Reservoir within Singapore's heavily forested central catchment area.",
+            "The Singapore Zoo, formerly known as the Singapore Zoological Gardens and commonly known locally as the Mandai Zoo, occupies 28 hectares (69 acres).",
             "Built across the mouth of Marina Channel, Marina Barrage (MB) creates Singapore’s 15th reservoir, and the first in the heart of the city.",
-            "Esplanade – Theatres on the Bay, also known as the Esplanade Theatre or simply The Esplanade, is a 60,000 square metres (6.0 ha) performing arts centre located in Marina Bay near the mouth of the Singapore River. Named after the nearby Esplanade Park, it consists of a concert hall which seats about 1,600 and a theatre with a capacity of about 2,000 for the performing arts.",
-            "The HSBC TreeTop Walk opened to public on 5 November 2004. It connects the two highest points in MacRitchie – Bukit Pierce and Bukit Kalang. At the highest point, the bridge hangs 25 metres from the forest floor.",
-            "The Maxwell Food Centre dates back to pre-war days as a fresh food market and food centre. In 1986, it was converted into a food centre, housing hawkers from the vicinity. The present existing hawker centre was renovated in 2001."};
+            "Esplanade – Theatres on the Bay, also known as the Esplanade Theatre or simply The Esplanade, is a 60,000 square metres (6.0 ha) performing arts centre located in Marina Bay.",
+            "The HSBC TreeTop Walk opened to public on 5 November 2004. It connects the two highest points in MacRitchie – Bukit Pierce and Bukit Kalang.",
+            "The Maxwell Food Centre dates back to pre-war days as a fresh food market and food centre. In 1986, it was converted into a food centre, housing hawkers from the vicinity."};
 
 
     private void initData(SQLiteDatabase db){

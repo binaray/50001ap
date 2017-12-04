@@ -84,8 +84,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
         locateButton=view.findViewById( R.id.locate_button);
 
         featured = dataList.get(currentPos);
-        String title="Featured Location: ";
-        title=title.concat(featured.getName());
+        String title=featured.getName();
         featuredName.setText(title);
         featuredImg.setImageResource(featured.getImageUrl());
         featuredDetails.setText(featured.getDetails());
@@ -123,8 +122,7 @@ public class MainFragment extends Fragment implements MyAdapter.OnItemClicked{
     void setFeatured(int position){
         currentPos=position;
         featured = dataList.get(position);
-        String title="Selected Location: ";
-        title=title.concat(featured.getName());
+        String title=featured.getName();
         featuredName.setText(title);
         featuredImg.setImageResource(featured.getImageUrl());
         featuredDetails.setText(featured.getDetails());

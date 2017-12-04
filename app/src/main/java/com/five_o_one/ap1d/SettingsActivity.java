@@ -8,6 +8,7 @@ import android.util.Log;
 
 public class SettingsActivity extends AppCompatActivity {
 
+
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {

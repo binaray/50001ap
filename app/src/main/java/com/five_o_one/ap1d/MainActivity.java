@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMa
     }
 
     public void setupUi(){
+        final String[] algoStrings={"Brute Force","Fast Estimate"};
+        algoSelect.setAdapter(new ArrayAdapter<String>(this,R.layout.spinner_layout,algoStrings));
         bg_img.setImageResource(dataList.get(rand).getImageUrl());  //set random featured bg
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
